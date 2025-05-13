@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_12_163606) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_13_155038) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -36,11 +36,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_12_163606) do
 
   create_table "borrowings", force: :cascade do |t|
     t.date "borrow_date", null: false
-    t.date "return_date", null: false
+    t.date "return_date"
     t.bigint "user_id", null: false
     t.bigint "book_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.date "due_date", null: false
     t.index ["book_id"], name: "index_borrowings_on_book_id"
     t.index ["user_id"], name: "index_borrowings_on_user_id"
   end
@@ -71,13 +72,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_12_163606) do
     t.string "last_name"
     t.string "email", null: false
     t.string "password"
-    t.string "role"
     t.string "type"
     t.date "employment_date"
     t.date "membership_start"
     t.date "membership_end"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.date "termination_date"
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 

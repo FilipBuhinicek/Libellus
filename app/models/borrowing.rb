@@ -4,7 +4,8 @@
 #
 #  id             :integer          not null, primary key
 #  borrow_date    :date             not null
-#  return_date    :date             not null
+#  return_date    :date
+#  due_date       :date             not null
 #  user_id        :integer          not null
 #  book_id        :integer          not null
 #  created_at     :datetime         not null

@@ -7,9 +7,9 @@
 #  last_name         :string
 #  email             :string           not null
 #  password          :string
-#  role              :string
 #  type              :string
 #  employment_date   :date
+#  termination_date  :date
 #  membership_start  :date
 #  membership_end    :date
 #  created_at        :datetime         not null
