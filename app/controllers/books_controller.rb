@@ -2,6 +2,8 @@ class BooksController < ApplicationController
   before_action :authenticate_request
   before_action :load_books, only: [ :index ]
   before_action :load_book, only: [ :show, :update, :destroy ]
+  before_action :authorize_resource, only: [ :show, :update, :destroy ]
+  before_action :authorize_class, only: [ :index ]
 
   def index
     render json: @books
@@ -13,6 +15,8 @@ class BooksController < ApplicationController
 
   def create
     book = Book.new(book_params)
+
+    authorize book
 
     if book.save
       render json: book, status: :created
@@ -37,7 +41,7 @@ class BooksController < ApplicationController
   private
 
   def load_books
-    @books = Book.all
+    @books = policy_scope(Book)
   end
 
   def load_book
@@ -48,5 +52,13 @@ class BooksController < ApplicationController
 
   def book_params
     params.require(:book).permit(:title, :published_year, :description, :book_type, :copies_available, :author_id)
+  end
+
+  def authorize_resource
+    authorize @book
+  end
+
+  def authorize_class
+    authorize Book
   end
 end

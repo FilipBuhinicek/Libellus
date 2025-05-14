@@ -2,6 +2,9 @@ class AuthorsController < ApplicationController
   before_action :authenticate_request
   before_action :load_authors, only: [ :index ]
   before_action :load_author, only: [ :show, :update, :destroy ]
+  before_action :authorize_resource, only: [ :show, :update, :destroy ]
+  before_action :authorize_class, only: [ :index ]
+
 
   def index
     render json: @authors
@@ -13,6 +16,8 @@ class AuthorsController < ApplicationController
 
   def create
     author = Author.new(author_params)
+
+    authorize author
 
     if author.save
       render json: author, status: :created
@@ -37,7 +42,7 @@ class AuthorsController < ApplicationController
   private
 
   def load_authors
-    @authors = Author.all
+    @authors = policy_scope(Author)
   end
 
   def load_author
@@ -48,5 +53,13 @@ class AuthorsController < ApplicationController
 
   def author_params
     params.require(:author).permit(:first_name, :last_name, :biography)
+  end
+
+  def authorize_resource
+    authorize @author
+  end
+
+  def authorize_class
+    authorize Author
   end
 end
