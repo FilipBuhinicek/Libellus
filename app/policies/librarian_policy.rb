@@ -1,4 +1,4 @@
-class AuthorPolicy < ApplicationPolicy
+class LibrarianPolicy < ApplicationPolicy
   def index?
     user.librarian?
   end
@@ -12,7 +12,7 @@ class AuthorPolicy < ApplicationPolicy
   end
 
   def update?
-    user.librarian?
+    user.librarian? && user == record
   end
 
   def destroy?

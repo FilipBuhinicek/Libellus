@@ -2,6 +2,8 @@ class LibrariansController < ApplicationController
   before_action :authenticate_request
   before_action :load_librarians, only: [ :index ]
   before_action :load_librarian, only: [ :show, :update, :destroy ]
+  before_action :authorize_resource, only: [ :show, :update, :destroy ]
+  before_action :authorize_class, only: [ :index ]
 
   def index
     render json: @librarians
@@ -12,17 +14,15 @@ class LibrariansController < ApplicationController
   end
 
   def create
-    if @current_user.librarian?
-      librarian = Librarian.new(librarian_params)
+    librarian = Librarian.new(librarian_params)
 
-      if librarian.save
-        token = encode_token(user_id: librarian.id)
-        render json: { token: token, librarian: librarian }, status: :created
-      else
-        render json: librarian.errors, status: :unprocessable_entity
-      end
+    authorize librarian
+
+    if librarian.save
+      token = encode_token(user_id: librarian.id)
+      render json: { token: token, librarian: librarian }, status: :created
     else
-      render json: { error: "Unauthorized: Only librarians can create other librarians." }, status: :unauthorized
+      render json: librarian.errors, status: :unprocessable_entity
     end
   end
 
@@ -42,7 +42,7 @@ class LibrariansController < ApplicationController
   private
 
   def load_librarians
-    @librarians = Librarian.all
+    @librarians = policy_scope(Librarian)
   end
 
   def load_librarian
@@ -54,6 +54,14 @@ class LibrariansController < ApplicationController
   def librarian_params
     params.require(:librarian).permit(
       :first_name, :last_name, :email, :password, :password_confirmation, :employment_date, :termination_date
-      )
+    )
+  end
+
+  def authorize_resource
+    authorize @librarian
+  end
+
+  def authorize_class
+    authorize Librarian
   end
 end

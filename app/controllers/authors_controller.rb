@@ -5,7 +5,6 @@ class AuthorsController < ApplicationController
   before_action :authorize_resource, only: [ :show, :update, :destroy ]
   before_action :authorize_class, only: [ :index ]
 
-
   def index
     render json: @authors
   end

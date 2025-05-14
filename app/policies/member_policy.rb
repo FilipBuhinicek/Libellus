@@ -1,22 +1,22 @@
-class AuthorPolicy < ApplicationPolicy
+class MemberPolicy < ApplicationPolicy
   def index?
     user.librarian?
   end
 
   def show?
-    user.librarian?
+    user.librarian? || user == record
   end
 
   def create?
-    user.librarian?
+    true
   end
 
   def update?
-    user.librarian?
+    user == record
   end
 
   def destroy?
-    user.librarian?
+    user.librarian? || user == record
   end
 
   class Scope < Scope

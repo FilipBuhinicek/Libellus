@@ -2,6 +2,8 @@ class MembersController < ApplicationController
   before_action :authenticate_request, only: [ :index, :show, :update, :destroy ]
   before_action :load_members, only: [ :index ]
   before_action :load_member, only: [ :show, :update, :destroy ]
+  before_action :authorize_resource, only: [ :show, :update, :destroy ]
+  before_action :authorize_class, only: [ :index ]
 
   def index
     render json: @members
@@ -13,6 +15,8 @@ class MembersController < ApplicationController
 
   def create
     member = Member.new(member_params)
+
+    authorize member
 
     if member.save
       token = encode_token(user_id: member.id)
@@ -38,7 +42,7 @@ class MembersController < ApplicationController
   private
 
   def load_members
-    @members = Member.all
+    @members = policy_scope(Member)
   end
 
   def load_member
@@ -51,5 +55,13 @@ class MembersController < ApplicationController
     params.require(:member).permit(
       :first_name, :last_name, :email, :password, :password_confirmation, :membership_start, :membership_end
       )
+  end
+
+  def authorize_resource
+    authorize @member
+  end
+
+  def authorize_class
+    authorize Member
   end
 end
