@@ -1,4 +1,5 @@
 class AuthorsController < ApplicationController
+  before_action :authenticate_request
   before_action :load_authors, only: [ :index ]
   before_action :load_author, only: [ :show, :update, :destroy ]
 

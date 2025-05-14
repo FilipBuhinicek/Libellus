@@ -1,4 +1,5 @@
 class BooksController < ApplicationController
+  before_action :authenticate_request
   before_action :load_books, only: [ :index ]
   before_action :load_book, only: [ :show, :update, :destroy ]
 

@@ -1,4 +1,5 @@
 class BorrowingsController < ApplicationControllerž
+  before_action :authenticate_request
   before_action :load_borrowings, only: [ :index ]
   before_action :load_borrowing, only: [ :show, :update, :destroy ]
 

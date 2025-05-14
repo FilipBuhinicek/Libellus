@@ -1,4 +1,5 @@
 class NotificationsController < ApplicationController
+  before_action :authenticate_request
   before_action :load_notifications, only: [ :index ]
   before_action :load_notification, only: [ :show, :update, :destroy ]
 

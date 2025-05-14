@@ -7,9 +7,8 @@ Rails.application.routes.draw do
   resources :authors
   resources :borrowings
 
+  post "/login", to: "sessions#create"
+
   # Health check ruta
   get "up" => "rails/health#show", as: :rails_health_check
-
-  # Root ruta (možeš ju promijeniti po potrebi)
-  # root "home#index"
 end

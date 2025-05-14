@@ -1,4 +1,5 @@
 class LibrariansController < ApplicationController
+  before_action :authenticate_request
   before_action :load_librarians, only: [ :index ]
   before_action :load_librarian, only: [ :show, :update, :destroy ]
 
@@ -11,12 +12,17 @@ class LibrariansController < ApplicationController
   end
 
   def create
-    librarian = Librarian.new(librarian_params)
+    if @current_user.librarian?
+      librarian = Librarian.new(librarian_params)
 
-    if librarian.save
-      render json: librarian, status: :created
+      if librarian.save
+        token = encode_token(user_id: librarian.id)
+        render json: { token: token, librarian: librarian }, status: :created
+      else
+        render json: librarian.errors, status: :unprocessable_entity
+      end
     else
-      render json: librarian.errors, status: :unprocessable_entity
+      render json: { error: "Unauthorized: Only librarians can create other librarians." }, status: :unauthorized
     end
   end
 

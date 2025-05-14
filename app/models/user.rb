@@ -32,4 +32,12 @@ class User < ApplicationRecord
   def full_name
     "#{first_name} #{last_name}"
   end
+
+  def librarian?
+    type == UserType::LIBRARIAN
+  end
+
+  def member?
+    type == UserType::MEMBER
+  end
 end

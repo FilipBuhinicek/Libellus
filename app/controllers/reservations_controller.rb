@@ -1,4 +1,5 @@
 class ReservationsController < ApplicationController
+  before_action :authenticate_request
   before_action :load_reservations, only: [ :index ]
   before_action :load_reservation, only: [ :show, :update, :destroy ]
 

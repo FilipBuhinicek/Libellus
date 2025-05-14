@@ -55,4 +55,10 @@ group :development, :test do
   gem "overcommit"
 
   gem "bcrypt", "~> 3.1.7"
+
+  gem "jwt"
+
+  gem "pry"
+  gem "pry-byebug"
+  gem "pry-rails"
 end

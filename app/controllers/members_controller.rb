@@ -1,4 +1,5 @@
 class MembersController < ApplicationController
+  before_action :authenticate_request, only: [ :index, :show, :update, :destroy ]
   before_action :load_members, only: [ :index ]
   before_action :load_member, only: [ :show, :update, :destroy ]
 
@@ -14,7 +15,8 @@ class MembersController < ApplicationController
     member = Member.new(member_params)
 
     if member.save
-      render json: member, status: :created
+      token = encode_token(user_id: member.id)
+      render json: { token: token, member: member }, status: :created
     else
       render json: member.errors, status: :unprocessable_entity
     end
