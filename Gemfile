@@ -53,4 +53,6 @@ group :development, :test do
   gem "factory_bot_rails"
 
   gem "overcommit"
+
+  gem "bcrypt", "~> 3.1.7"
 end

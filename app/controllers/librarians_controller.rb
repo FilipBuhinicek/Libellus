@@ -47,7 +47,7 @@ class LibrariansController < ApplicationController
 
   def librarian_params
     params.require(:librarian).permit(
-      :first_name, :last_name, :email, :password, :employment_date, :termination_date
+      :first_name, :last_name, :email, :password, :password_confirmation, :employment_date, :termination_date
       )
   end
 end
