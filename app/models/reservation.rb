@@ -17,6 +17,6 @@
 #
 
 class Reservation < ApplicationRecord
-  belongs_to :user, class_name: "Member"
+  belongs_to :member, class_name: "Member", foreign_key: "user_id"
   belongs_to :book
 end

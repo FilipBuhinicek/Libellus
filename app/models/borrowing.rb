@@ -18,6 +18,24 @@
 #
 
 class Borrowing < ApplicationRecord
-  belongs_to :member, class_name: "Member"
+  belongs_to :member, class_name: "Member", foreign_key: "user_id"
   belongs_to :book
+
+  validates :borrow_date, presence: true
+  validates :due_date, presence: true
+
+  validate :due_date_after_borrow_date
+  validate :return_date_after_borrow_date, if: -> { return_date.present? }
+
+  private
+
+  def due_date_after_borrow_date
+    return if borrow_date.blank? || due_date.blank?
+    errors.add(:due_date, "must be after borrow date") if due_date <= borrow_date
+  end
+
+  def return_date_after_borrow_date
+    return if borrow_date.blank? || return_date.blank?
+    errors.add(:return_date, "must be after borrow date") if return_date < borrow_date
+  end
 end

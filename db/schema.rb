@@ -10,12 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_13_155038) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_14_160547) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
   create_table "authors", force: :cascade do |t|
-    t.string "first_name"
+    t.string "first_name", null: false
     t.string "last_name"
     t.text "biography"
     t.datetime "created_at", null: false
@@ -23,12 +23,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_13_155038) do
   end
 
   create_table "books", force: :cascade do |t|
-    t.string "title"
+    t.string "title", limit: 255, null: false
     t.integer "published_year"
     t.text "description"
     t.string "book_type"
     t.integer "copies_available"
-    t.bigint "author_id", null: false
+    t.integer "author_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["author_id"], name: "index_books_on_author_id"
@@ -47,9 +47,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_13_155038) do
   end
 
   create_table "notifications", force: :cascade do |t|
-    t.string "title"
-    t.text "content"
-    t.date "sent_date"
+    t.string "title", limit: 255, null: false
+    t.text "content", null: false
+    t.date "sent_date", null: false
     t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -68,8 +68,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_13_155038) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.string "first_name"
-    t.string "last_name"
+    t.string "first_name", null: false
+    t.string "last_name", null: false
     t.string "email", null: false
     t.string "password"
     t.string "type"

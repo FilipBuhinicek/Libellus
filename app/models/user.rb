@@ -3,11 +3,11 @@
 # Table name: users
 #
 #  id                :integer          not null, primary key
-#  first_name        :string
-#  last_name         :string
+#  first_name        :string           not null
+#  last_name         :string           not null
 #  email             :string           not null
 #  password          :string
-#  type              :string
+#  type              :string           not null
 #  employment_date   :date
 #  termination_date  :date
 #  membership_start  :date
@@ -22,4 +22,13 @@
 
 class User < ApplicationRecord
   has_many :notifications
+
+  self.inheritance_column = :type
+
+  validates :first_name, :last_name, :email, presence: true
+  validates :email, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
+
+  def full_name
+    "#{first_name} #{last_name}"
+  end
 end
