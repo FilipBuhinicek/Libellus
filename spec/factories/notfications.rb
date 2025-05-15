@@ -3,6 +3,6 @@ FactoryBot.define do
     title { "Reminder" }
     content { "Your book is due in 3 days." }
     sent_date { Date.today }
-    association :user
+    association :member, factory: :member
   end
 end

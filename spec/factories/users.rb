@@ -3,16 +3,15 @@ FactoryBot.define do
     first_name { "John" }
     last_name  { "Doe" }
     sequence(:email) { |n| "user#{n}@gmail.com" }
-    password { "password" }
-    role { "user" }
+    password { "password123" } # automatski postavlja password_digest
 
-    trait :member do
-      type { UserType::MEMBER }
+    factory :member, class: 'Member' do
+      type { 'Member' }
       membership_start { Date.today }
     end
 
-    trait :librarian do
-      type { UserType::LIBRARIAN }
+    factory :librarian, class: 'Librarian' do
+      type { 'Librarian' }
       employment_date { Date.today }
     end
   end

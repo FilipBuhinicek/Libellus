@@ -16,7 +16,7 @@
 #
 
 class Notification < ApplicationRecord
-  belongs_to :user
+  belongs_to :member, class_name: "Member", foreign_key: "user_id"
 
   validates :title, presence: true, length: { maximum: 255 }
   validates :content, presence: true

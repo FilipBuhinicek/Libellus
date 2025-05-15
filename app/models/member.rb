@@ -21,8 +21,9 @@
 #
 
 class Member < User
-  has_many :borrowings
-  has_many :reservations
+  has_many :borrowings, foreign_key: "user_id"
+  has_many :reservations, foreign_key: "user_id"
+  has_many :notifications, foreign_key: "user_id"
 
   validates :membership_start, presence: true
   validate :membership_end_after_start, if: -> { membership_end.present? }

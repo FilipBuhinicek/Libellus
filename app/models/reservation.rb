@@ -19,4 +19,18 @@
 class Reservation < ApplicationRecord
   belongs_to :member, class_name: "Member", foreign_key: "user_id"
   belongs_to :book
+
+  validates :reservation_date, presence: true
+  validates :expiration_date, presence: true
+  validate :expiration_date_after_reservation_date
+
+  private
+
+  def expiration_date_after_reservation_date
+    return if reservation_date.blank? || expiration_date.blank?
+
+    if expiration_date <= reservation_date
+      errors.add(:expiration_date, "must be after reservation date")
+    end
+  end
 end

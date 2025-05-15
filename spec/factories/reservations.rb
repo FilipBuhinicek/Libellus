@@ -3,6 +3,6 @@ FactoryBot.define do
     reservation_date { Date.today }
     expiration_date { Date.today + 7 }
     association :book
-    association :user, factory: [ :user, :member ]
+    association :member
   end
 end
