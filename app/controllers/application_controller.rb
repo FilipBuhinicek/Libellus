@@ -11,6 +11,8 @@ class ApplicationController < ActionController::API
     render json: { error: "Invalid or expired token" }, status: :unauthorized
   end
 
+  attr_reader :current_user
+
   private
 
   def decode_token(token)
