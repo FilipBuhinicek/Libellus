@@ -2,6 +2,8 @@ class ReservationsController < ApplicationController
   before_action :authenticate_request
   before_action :load_reservations, only: [ :index ]
   before_action :load_reservation, only: [ :show, :update, :destroy ]
+  before_action :authorize_resource, only: [ :show, :update, :destroy ]
+  before_action :authorize_class, only: [ :index ]
 
   def index
     render json: @reservations
@@ -13,6 +15,8 @@ class ReservationsController < ApplicationController
 
   def create
     reservation = Reservation.new(reservation_params)
+
+    authorize reservation
 
     if reservation.save
       render json: reservation, status: :created
@@ -37,7 +41,7 @@ class ReservationsController < ApplicationController
   private
 
   def load_reservations
-    @reservations = Reservation.all
+    @reservations = policy_scope(Reservation)
   end
   def load_reservation
     @reservation = Reservation.find(params[:id])
@@ -47,5 +51,13 @@ class ReservationsController < ApplicationController
 
   def reservation_params
     params.require(:reservation).permit(:reservation_date, :expiration_date, :user_id, :book_id)
+  end
+
+  def authorize_resource
+    authorize @reservation
+  end
+
+  def authorize_class
+    authorize Reservation
   end
 end

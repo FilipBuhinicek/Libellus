@@ -68,7 +68,7 @@ class NotificationsController < ApplicationController
   private
 
   def load_notifications
-    @notifications = Notification.all
+    @notifications = policy_scope(Notification)
   end
 
   def load_notification

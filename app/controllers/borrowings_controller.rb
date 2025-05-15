@@ -2,6 +2,8 @@ class BorrowingsController < ApplicationControllerž
   before_action :authenticate_request
   before_action :load_borrowings, only: [ :index ]
   before_action :load_borrowing, only: [ :show, :update, :destroy ]
+  before_action :authorize_resource, only: [ :show, :update, :destroy ]
+  before_action :authorize_class, only: [ :index ]
 
   def index
     render json: @borrowings
@@ -13,6 +15,8 @@ class BorrowingsController < ApplicationControllerž
 
   def create
     borrowing = Borrowing.new(borrowing_params)
+
+    authorize borrowing
 
     if borrowing.save
       render json: borrowing, status: :created
@@ -37,7 +41,7 @@ class BorrowingsController < ApplicationControllerž
   private
 
   def load_borrowings
-    @borrowings = Borrowing.all
+    @borrowings = policy_scope(Borrowing)
   end
 
   def load_borrowing
@@ -48,5 +52,13 @@ class BorrowingsController < ApplicationControllerž
 
   def borrowing_params
     params.require(:borrowing).permit(:book_id, :user_id, :borrow_date, :due_date, :return_date)
+  end
+
+  def authorize_resource
+    authorize @borrowing
+  end
+
+  def authorize_class
+    authorize Borrowing
   end
 end
