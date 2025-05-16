@@ -14,7 +14,7 @@ RSpec.describe Notification, type: :model do
     it { should validate_presence_of(:sent_date) }
 
     it 'is invalid if sent_date is in the future' do
-      notification = build(:notification, sent_date: Date.tomorrow)
+      notification = build(:notification, sent_date: Date.today + 2)
       expect(notification).not_to be_valid
       expect(notification.errors[:sent_date]).to include("can't be in the future")
     end

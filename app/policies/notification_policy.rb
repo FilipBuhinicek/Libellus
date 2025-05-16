@@ -4,7 +4,7 @@ class NotificationPolicy < ApplicationPolicy
   end
 
   def show?
-    user.librarian? || user == record.user
+    user.librarian? || user == record.member
   end
 
   def create?
@@ -16,7 +16,7 @@ class NotificationPolicy < ApplicationPolicy
   end
 
   def destroy?
-    user.librarian? || user == record.user
+    user.librarian? || user == record.member
   end
 
   def check_status?

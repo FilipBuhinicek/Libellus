@@ -1,27 +1,36 @@
-# require 'rails_helper'
+require 'rails_helper'
 
-# RSpec.describe AuthorPolicy, type: :policy do
-#   let(:user) { User.new }
+RSpec.describe AuthorPolicy, type: :policy do
+  subject { described_class }
 
-#   subject { described_class }
+  let(:author) { create(:author) }
 
-#   permissions ".scope" do
-#     pending "add some examples to (or delete) #{__FILE__}"
-#   end
+  permissions :index?, :show?, :create?, :update?, :destroy? do
+    context 'when user is a librarian' do
+      let(:user) { create(:librarian) }
 
-#   permissions :show? do
-#     pending "add some examples to (or delete) #{__FILE__}"
-#   end
+      it 'grants access' do
+        expect(subject).to permit(user, author)
+      end
+    end
 
-#   permissions :create? do
-#     pending "add some examples to (or delete) #{__FILE__}"
-#   end
+    context 'when user is not a librarian' do
+      let(:user) { create(:member) }
 
-#   permissions :update? do
-#     pending "add some examples to (or delete) #{__FILE__}"
-#   end
+      it 'denies access' do
+        expect(subject).not_to permit(user, author)
+      end
+    end
+  end
 
-#   permissions :destroy? do
-#     pending "add some examples to (or delete) #{__FILE__}"
-#   end
-# end
+  describe 'Scope' do
+    it 'returns all authors' do
+      user = nil
+
+      create_list(:author, 2)
+      scope = Pundit.policy_scope!(user, Author)
+
+      expect(scope).to match_array(Author.all)
+    end
+  end
+end
