@@ -6,11 +6,11 @@ class LibrariansController < ApplicationController
   before_action :authorize_class, only: [ :index ]
 
   def index
-    render json: @librarians
+    render json: LibrarianSerializer.new(@librarians).serializable_hash
   end
 
   def show
-    render json: @librarian
+    render json: LibrarianSerializer.new(@librarian).serializable_hash
   end
 
   def create
@@ -20,7 +20,10 @@ class LibrariansController < ApplicationController
 
     if librarian.save
       token = encode_token(user_id: librarian.id)
-      render json: { token: token, librarian: librarian }, status: :created
+      render json: {
+        token: token,
+        librarian: LibrarianSerializer.new(librarian).serializable_hash
+      }, status: :created
     else
       render json: librarian.errors, status: :unprocessable_entity
     end
@@ -28,7 +31,7 @@ class LibrariansController < ApplicationController
 
   def update
     if @librarian.update(librarian_params)
-      render json: @librarian
+      render json: LibrarianSerializer.new(@librarian).serializable_hash
     else
       render json: @librarian.errors, status: :unprocessable_entity
     end

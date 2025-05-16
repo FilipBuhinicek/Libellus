@@ -63,6 +63,8 @@ group :development, :test do
   gem "pry-rails"
 
   gem "pundit"
+
+  gem "jsonapi-serializer"
 end
 
 group :test do

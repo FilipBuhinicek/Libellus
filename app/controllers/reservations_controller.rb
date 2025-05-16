@@ -6,11 +6,11 @@ class ReservationsController < ApplicationController
   before_action :authorize_class, only: [ :index ]
 
   def index
-    render json: @reservations
+    render json: ReservationSerializer.new(@reservations).serializable_hash
   end
 
   def show
-    render json: @reservation
+    render json: ReservationSerializer.new(@reservation).serializable_hash
   end
 
   def create
@@ -19,7 +19,7 @@ class ReservationsController < ApplicationController
     authorize reservation
 
     if reservation.save
-      render json: reservation, status: :created
+      render json: ReservationSerializer.new(reservation).serializable_hash, status: :created
     else
       render json: reservation.errors, status: :unprocessable_entity
     end
@@ -27,7 +27,7 @@ class ReservationsController < ApplicationController
 
   def update
     if @reservation.update(reservation_params)
-      render json: @reservation
+      render json: ReservationSerializer.new(@reservation).serializable_hash
     else
       render json: @reservation.errors, status: :unprocessable_entity
     end

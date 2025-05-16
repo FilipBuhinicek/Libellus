@@ -6,11 +6,11 @@ class BooksController < ApplicationController
   before_action :authorize_class, only: [ :index ]
 
   def index
-    render json: @books
+    render json: BookSerializer.new(@books).serializable_hash
   end
 
   def show
-    render json: @book
+    render json: BookSerializer.new(@book).serializable_hash
   end
 
   def create
@@ -19,7 +19,7 @@ class BooksController < ApplicationController
     authorize book
 
     if book.save
-      render json: book, status: :created
+      render json: BookSerializer.new(book).serializable_hash, status: :created
     else
       render json: book.errors, status: :unprocessable_entity
     end
@@ -27,7 +27,7 @@ class BooksController < ApplicationController
 
   def update
     if @book.update(book_params)
-      render json: @book
+      render json: BookSerializer.new(@book).serializable_hash
     else
       render json: @book.errors, status: :unprocessable_entity
     end

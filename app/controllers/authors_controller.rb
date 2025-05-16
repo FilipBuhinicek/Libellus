@@ -6,11 +6,11 @@ class AuthorsController < ApplicationController
   before_action :authorize_class, only: [ :index ]
 
   def index
-    render json: @authors
+    render json: AuthorSerializer.new(@authors).serializable_hash
   end
 
   def show
-    render json: @author
+    render json: AuthorSerializer.new(@author).serializable_hash
   end
 
   def create
@@ -19,7 +19,7 @@ class AuthorsController < ApplicationController
     authorize author
 
     if author.save
-      render json: author, status: :created
+      render json: AuthorSerializer.new(author).serializable_hash, status: :created
     else
       render json: author.errors, status: :unprocessable_entity
     end
@@ -27,7 +27,7 @@ class AuthorsController < ApplicationController
 
   def update
     if @author.update(author_params)
-      render json: @author
+      render json: AuthorSerializer.new(@author).serializable_hash
     else
       render json: @author.errors, status: :unprocessable_entity
     end

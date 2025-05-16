@@ -6,11 +6,11 @@ class BorrowingsController < ApplicationController
   before_action :authorize_class, only: [ :index ]
 
   def index
-    render json: @borrowings
+    render json: BorrowingSerializer.new(@borrowings).serializable_hash
   end
 
   def show
-    render json: @borrowing
+    render json: BorrowingSerializer.new(@borrowing).serializable_hash
   end
 
   def create
@@ -19,7 +19,7 @@ class BorrowingsController < ApplicationController
     authorize borrowing
 
     if borrowing.save
-      render json: borrowing, status: :created
+      render json: BorrowingSerializer.new(borrowing).serializable_hash, status: :created
     else
       render json: borrowing.errors, status: :unprocessable_entity
     end
@@ -27,7 +27,7 @@ class BorrowingsController < ApplicationController
 
   def update
     if @borrowing.update(borrowing_params)
-      render json: @borrowing
+      render json: BorrowingSerializer.new(@borrowing).serializable_hash
     else
       render json: @borrowing.errors, status: :unprocessable_entity
     end

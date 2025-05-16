@@ -6,11 +6,11 @@ class NotificationsController < ApplicationController
   before_action :authorize_class, only: [ :index, :check_status ]
 
   def index
-    render json: @notifications
+    render json: NotificationSerializer.new(@notifications).serializable_hash
   end
 
   def show
-    render json: @notification
+    render json: NotificationSerializer.new(@notification).serializable_hash
   end
 
   def create
@@ -19,7 +19,7 @@ class NotificationsController < ApplicationController
     authorize notification
 
     if notification.save
-      render json: notification, status: :created
+      render json: NotificationSerializer.new(notification).serializable_hash, status: :created
     else
       render json: notification.errors, status: :unprocessable_entity
     end
@@ -27,7 +27,7 @@ class NotificationsController < ApplicationController
 
   def update
     if @notification.update(notification_params)
-      render json: @notification
+      render json: NotificationSerializer.new(@notification).serializable_hash
     else
       render json: @notification.errors, status: :unprocessable_entity
     end

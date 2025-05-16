@@ -6,11 +6,11 @@ class MembersController < ApplicationController
   before_action :authorize_class, only: [ :index ]
 
   def index
-    render json: @members
+    render json: MemmberSerializer.new(@members).serializable_hash
   end
 
   def show
-    render json: @member
+    render json: MemmberSerializer.new(@member).serializable_hash
   end
 
   def create
@@ -20,7 +20,10 @@ class MembersController < ApplicationController
 
     if member.save
       token = encode_token(user_id: member.id)
-      render json: { token: token, member: member }, status: :created
+      render json: {
+        token: token,
+        member: MemmberSerializer.new(member).serializable_hash
+      }, status: :created
     else
       render json: member.errors, status: :unprocessable_entity
     end
@@ -28,7 +31,7 @@ class MembersController < ApplicationController
 
   def update
     if @member.update(member_params)
-      render json: @member
+      render json: MemmberSerializer.new(@member).serializable_hash
     else
       render json: @member.errors, status: :unprocessable_entity
     end
