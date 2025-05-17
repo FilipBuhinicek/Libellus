@@ -16,17 +16,17 @@ RSpec.describe NotificationPolicy, type: :policy do
   end
 
 
-  permissions :create?, :check_status? do
-    context 'when user is a member' do
-      let(:user) { create(:member) }
+  permissions :create? do
+    context 'when user is a librarian' do
+      let(:user) { create(:librarian) }
 
       it 'grants access' do
         expect(subject).to permit(user, notification)
       end
     end
 
-    context 'when user is not a member' do
-      let(:user) { create(:librarian) }
+    context 'when user is not a librarian' do
+      let(:user) { create(:member) }
 
       it 'denies access' do
         expect(subject).not_to permit(user, notification)

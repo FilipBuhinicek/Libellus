@@ -75,9 +75,9 @@ RSpec.describe "Notifications", type: :request do
       }
     end
 
-    it "creates notification as member for themselves" do
+    it "creates notification for member" do
       expect {
-        post "/notifications", params: valid_params.to_json, headers: member_headers
+        post "/notifications", params: valid_params.to_json, headers: librarian_headers
       }.to change { Notification.count }.by(1)
 
       expect(response).to have_http_status(:created)
@@ -87,8 +87,8 @@ RSpec.describe "Notifications", type: :request do
       expect(response_data["relationships"]["member"]["data"]["id"]).to eq(member.id.to_s)
     end
 
-    it "forbids creation by librarian" do
-      post "/notifications", params: valid_params.to_json, headers: librarian_headers
+    it "forbids creation by members" do
+      post "/notifications", params: valid_params.to_json, headers: member_headers
 
       expect(response).to have_http_status(:forbidden)
     end

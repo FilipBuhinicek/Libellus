@@ -8,7 +8,7 @@ class NotificationPolicy < ApplicationPolicy
   end
 
   def create?
-    user.member?
+    user.librarian?
   end
 
   def update?
@@ -17,10 +17,6 @@ class NotificationPolicy < ApplicationPolicy
 
   def destroy?
     user.librarian? || user == record.member
-  end
-
-  def check_status?
-    user.member?
   end
 
   class Scope < Scope

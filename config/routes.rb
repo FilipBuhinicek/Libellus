@@ -1,10 +1,6 @@
 Rails.application.routes.draw do
   resources :reservations
-  resources :notifications do
-    collection do
-      get :check_status
-    end
-  end
+  resources :notifications
   resources :members
   resources :librarians
   resources :books

@@ -3,7 +3,7 @@ class NotificationsController < ApplicationController
   before_action :load_notifications, only: [ :index ]
   before_action :load_notification, only: [ :show, :update, :destroy ]
   before_action :authorize_resource, only: [ :show, :update, :destroy ]
-  before_action :authorize_class, only: [ :index, :check_status ]
+  before_action :authorize_class, only: [ :index ]
 
   def index
     render json: NotificationSerializer.new(@notifications).serializable_hash
@@ -36,33 +36,6 @@ class NotificationsController < ApplicationController
   def destroy
     @notification.destroy
     head :no_content
-  end
-
-  # Custom akcija
-  def check_status
-    status_data = []
-
-    current_user.borrowings.includes(book: :author).where("due_date >= ?", Date.today).find_each do |borrowing|
-      days_remaining = (borrowing.due_date - Date.today).to_i
-      status_data << {
-        type: "borrowing",
-        days_until_end: days_remaining,
-        book_title: borrowing.book.title,
-        book_author: borrowing.book.author&.full_name || "Anonymous"
-      }
-    end
-
-    current_user.reservations.includes(book: :author).where("expiration_date >= ?", Date.today).find_each do |reservation|
-      days_remaining = (reservation.expiration_date - Date.today).to_i
-      status_data << {
-        type: "reservation",
-        days_until_end: days_remaining,
-        book_title: reservation.book.title,
-        book_author: reservation.book.author&.full_name || "Anonymous"
-      }
-    end
-
-    render json: status_data
   end
 
   private

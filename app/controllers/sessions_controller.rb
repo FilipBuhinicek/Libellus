@@ -4,6 +4,9 @@ class SessionsController < ApplicationController
 
     if user&.authenticate(params[:password])
       token = encode_token(user_id: user.id)
+
+      AutoNotificationService.call(user)
+
       render json: {
         token: token,
         user: UserSerializer.new(user).serializable_hash
