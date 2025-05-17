@@ -38,7 +38,7 @@ RSpec.describe "Books", type: :request do
           title: "Judita",
           published_year: 1521,
           description: "Ep o osloboditeljici naroda, djelo Marka Marulića.",
-          book_type: "epic poem",
+          book_type: "historical",
           copies_available: 3,
           author_id: author.id
         }
@@ -51,7 +51,7 @@ RSpec.describe "Books", type: :request do
       expect(response_data["attributes"]["title"]).to eq("Judita")
       expect(response_data["attributes"]["published_year"]).to eq(1521)
       expect(response_data["attributes"]["description"]).to eq("Ep o osloboditeljici naroda, djelo Marka Marulića.")
-      expect(response_data["attributes"]["book_type"]).to eq("epic poem")
+      expect(response_data["attributes"]["book_type"]).to eq("historical")
       expect(response_data["attributes"]["copies_available"]).to eq(3)
       expect(response_data["relationships"]["author"]["data"]["id"]).to eq(author.id.to_s)
     end
@@ -60,7 +60,7 @@ RSpec.describe "Books", type: :request do
   describe "PATCH /update" do
     let(:author) { create(:author) }
     let(:book) do
-      create(:book, title: "OldTitle", published_year: 1001, description: 'OldDescription', book_type: 'Old type', author: author)
+      create(:book, title: "OldTitle", published_year: 1001, description: 'OldDescription', book_type: 'romance', author: author)
     end
     context "with valid params" do
       let(:valid_params) do
@@ -69,7 +69,7 @@ RSpec.describe "Books", type: :request do
             title: "Judita",
             published_year: 1521,
             description: "Ep o osloboditeljici naroda, djelo Marka Marulića.",
-            book_type: "epic poem",
+            book_type: "historical",
             copies_available: 3,
             author_id: author.id
           }
@@ -85,7 +85,7 @@ RSpec.describe "Books", type: :request do
         expect(response_data["attributes"]["title"]).to eq("Judita")
         expect(response_data["attributes"]["published_year"]).to eq(1521)
         expect(response_data["attributes"]["description"]).to eq("Ep o osloboditeljici naroda, djelo Marka Marulića.")
-        expect(response_data["attributes"]["book_type"]).to eq("epic poem")
+        expect(response_data["attributes"]["book_type"]).to eq("historical")
         expect(response_data["attributes"]["copies_available"]).to eq(3)
         expect(response_data["relationships"]["author"]["data"]["id"]).to eq(author.id.to_s)
 

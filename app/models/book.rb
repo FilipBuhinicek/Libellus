@@ -27,4 +27,5 @@ class Book < ApplicationRecord
   validates :published_year, numericality: { only_integer: true, less_than_or_equal_to: Date.current.year }, allow_nil: true
   validates :description, length: { maximum: 2000 }, allow_blank: true
   validates :copies_available, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+  validates :book_type, presence: true, inclusion: { in: BookType::ALL }
 end
