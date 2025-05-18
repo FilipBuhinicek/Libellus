@@ -3,12 +3,9 @@ require 'rails_helper'
 # This integration spec verifies the full flow of notification creation in the system.
 # It covers the following steps:
 # 1. A librarian creates two books.
-# 2. A new member is created.
-# 3. The member performs two actions:
-#    - Borrows the first book.
-#    - Reserves the second book.
-# 4. Upon login, the system triggers the automatic notification check for the member.
-# 5. Finally, the spec asserts that:
+# 2. A new member is created and assigned on a borrowing and reservation
+# 3. Upon login, the system triggers the automatic notification check for the member.
+# 4. Finally, the spec asserts that:
 #    - Two notifications are generated.
 #    - One is related to the borrowing.
 #    - The other is related to the reservation.
@@ -30,47 +27,11 @@ RSpec.describe 'Notifications Integration', type: :request do
     post '/books', params: book2_params.to_json, headers: librarian_headers
     book2_id = JSON.parse(response.body)['data']['id'].to_i
 
-    # Create a member and associated user
-    member_params = {
-      member: {
-        first_name: "Iva",
-        last_name: "Ivic",
-        email: "iva@example.com",
-        password: "password",
-        membership_start: Date.today
-      }
-    }
+    member = create(:member, email: "iva@example.com", password: "password", password_confirmation: "password")
+    member_headers = auth_headers_for(member)
 
-    headers = {
-      'CONTENT_TYPE' => 'application/json',
-      'ACCEPT' => 'application/json'
-    }
-
-    post "/members", params: member_params.to_json, headers: headers
-
-    member_id = JSON.parse(response.body)['member']['data']['id'].to_i
-    member_headers = auth_headers_for(Member.find(member_id))
-
-    # Member borrows book1
-    borrowing_params = {
-      book_id: book1_id,
-      user_id: member_id,
-      borrow_date: Date.today,
-      due_date: Date.today + 30.days
-    }
-
-    post '/borrowings', params: borrowing_params.to_json, headers: member_headers
-    expect(response).to have_http_status(:created)
-
-    # Member reserves book2
-    reservation_params = {
-      book_id: book2_id,
-      user_id: member_id,
-      reservation_date: Date.today,
-      expiration_date: Date.today + 7.days
-    }
-    post '/reservations', params: reservation_params.to_json, headers: member_headers
-    expect(response).to have_http_status(:created)
+    _borrowing = create(:borrowing, member: member, book_id: book1_id)
+    _reservation = create(:reservation, member: member, book_id: book2_id)
 
     # After member login, notification chech is triggered and notifications are created
     post '/login', params: { email: "iva@example.com", password: "password" }
