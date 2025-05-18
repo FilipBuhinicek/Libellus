@@ -19,10 +19,10 @@ class AutoNotificationService
       days_remaining = (borrowing.due_date - Date.today).to_i
       title = "Book borrowing: #{borrowing.book.title}, Author: #{borrowing.book.author&.full_name || "Unknown"}"
 
-      next if Notification.exists?(user: @user, title: title, created_at: Time.current.all_day)
+      next if Notification.exists?(member: @user, title: title, created_at: Time.current.all_day)
 
       Notification.create!(
-        user: @user,
+        member: @user,
         title: title,
         content: "The borrowing expires in #{days_remaining} days.",
         sent_date: Time.current
@@ -35,10 +35,10 @@ class AutoNotificationService
       days_remaining = (reservation.expiration_date - Date.today).to_i
       title = "Book reservation: #{reservation.book.title}, Author: #{reservation.book.author&.full_name || "Unknown"}"
 
-      next if Notification.exists?(user: @user, title: title, created_at: Time.current.all_day)
+      next if Notification.exists?(member: @user, title: title, created_at: Time.current.all_day)
 
       Notification.create!(
-        user: @user,
+        member: @user,
         title: title,
         content: "The reservation expires in #{days_remaining} days.",
         sent_date: Time.current

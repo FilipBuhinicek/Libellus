@@ -6,7 +6,7 @@ class LibrariansController < ApplicationController
   before_action :authorize_class, only: [ :index ]
 
   def index
-    render json: LibrarianSerializer.new(@librarians).serializable_hash
+    render json: LibrarianSerializer.new(filtered_librarians).serializable_hash
   end
 
   def show
@@ -66,5 +66,20 @@ class LibrariansController < ApplicationController
 
   def authorize_class
     authorize Librarian
+  end
+
+  def filtered_librarians
+    librarians = @librarians
+
+    librarians = librarians.where("first_name ILIKE ?", "%#{params[:first_name]}%") if params[:first_name].present?
+    librarians = librarians.where("last_name ILIKE ?", "%#{params[:last_name]}%") if params[:last_name].present?
+
+    if params[:employed] == "true"
+      librarians = librarians.where("termination_date IS NULL OR termination_date >= ?", Date.today)
+    elsif params[:employed] == "false"
+      librarians = librarians.where("termination_date IS NOT NULL AND termination_date < ?", Date.today)
+    end
+
+    librarians
   end
 end

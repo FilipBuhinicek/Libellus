@@ -6,7 +6,7 @@ class NotificationsController < ApplicationController
   before_action :authorize_class, only: [ :index ]
 
   def index
-    render json: NotificationSerializer.new(@notifications).serializable_hash
+    render json: NotificationSerializer.new(filtered_notifications).serializable_hash
   end
 
   def show
@@ -60,5 +60,19 @@ class NotificationsController < ApplicationController
 
   def authorize_class
     authorize Notification
+  end
+
+  def filtered_notifications
+    notifications = @notifications
+
+    notifications = notifications.where(user_id: params[:user_id]) if params[:user_id].present?
+    notifications = notifications.where(sent_date: params[:sent_date]) if params[:sent_date].present?
+
+    notifications = notifications.where("sent_date >= ?", params[:from_date]) if params[:from_date].present?
+    notifications = notifications.where("sent_date <= ?", params[:to_date]) if params[:to_date].present?
+
+    notifications = notifications.where("title ILIKE ?", "%#{params[:title]}%") if params[:title].present?
+
+    notifications
   end
 end

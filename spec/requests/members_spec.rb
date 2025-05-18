@@ -63,7 +63,7 @@ RSpec.describe "Members", type: :request do
     end
 
     it "allows anyone to create a member" do
-      post "/members", params: valid_params, as: :json
+      post "/members", params: valid_params.to_json, headers: { "CONTENT_TYPE" => "application/json" }
       expect(response).to have_http_status(:created)
 
       expect(create_response_data["attributes"]["email"]).to eq("iva@example.com")

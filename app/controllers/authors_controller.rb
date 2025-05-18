@@ -6,7 +6,7 @@ class AuthorsController < ApplicationController
   before_action :authorize_class, only: [ :index ]
 
   def index
-    render json: AuthorSerializer.new(@authors).serializable_hash
+    render json: AuthorSerializer.new(filtered_authors).serializable_hash
   end
 
   def show
@@ -60,5 +60,14 @@ class AuthorsController < ApplicationController
 
   def authorize_class
     authorize Author
+  end
+
+  def filtered_authors
+    authors = @authors
+
+    authors = authors.where("first_name ILIKE ?", "%#{params[:first_name]}%") if params[:first_name].present?
+    authors = authors.where("last_name ILIKE ?", "%#{params[:last_name]}%") if params[:last_name].present?
+
+    authors
   end
 end

@@ -6,7 +6,7 @@ class BooksController < ApplicationController
   before_action :authorize_class, only: [ :index ]
 
   def index
-    render json: BookSerializer.new(@books).serializable_hash
+    render json: BookSerializer.new(filtered_books).serializable_hash
   end
 
   def show
@@ -60,5 +60,25 @@ class BooksController < ApplicationController
 
   def authorize_class
     authorize Book
+  end
+
+  def filtered_books
+    books = @books
+
+    books = books.where("title ILIKE ?", "%#{params[:title]}%") if params[:title].present?
+    books = books.where(published_year: params[:published_year]) if params[:published_year].present?
+    books = books.where(book_type: params[:book_type]) if params[:book_type].present?
+    books = books.where(author_id: params[:author_id]) if params[:author_id].present?
+
+    if params[:copies_available].present?
+      case params[:copies_available]
+      when "true"
+        books = books.where("copies_available > 0")
+      when "false"
+        books = books.where(copies_available: 0)
+      end
+    end
+
+    books
   end
 end

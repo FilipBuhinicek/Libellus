@@ -6,7 +6,7 @@ class BorrowingsController < ApplicationController
   before_action :authorize_class, only: [ :index ]
 
   def index
-    render json: BorrowingSerializer.new(@borrowings).serializable_hash
+    render json: BorrowingSerializer.new(filtered_borrowings).serializable_hash
   end
 
   def show
@@ -60,5 +60,23 @@ class BorrowingsController < ApplicationController
 
   def authorize_class
     authorize Borrowing
+  end
+
+  def filtered_borrowings
+    borrowings = @borrowings
+
+    borrowings = borrowings.where(user_id: params[:user_id]) if params[:user_id].present?
+    borrowings = borrowings.where(book_id: params[:book_id]) if params[:book_id].present?
+
+    if params[:returned].present?
+      case params[:returned]
+      when "true"
+        borrowings = borrowings.where.not(return_date: nil)
+      when "false"
+        borrowings = borrowings.where(return_date: nil)
+      end
+    end
+
+    borrowings
   end
 end

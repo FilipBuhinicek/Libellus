@@ -6,7 +6,7 @@ class MembersController < ApplicationController
   before_action :authorize_class, only: [ :index ]
 
   def index
-    render json: MemberSerializer.new(@members).serializable_hash
+    render json: MemberSerializer.new(filtered_members).serializable_hash
   end
 
   def show
@@ -66,5 +66,20 @@ class MembersController < ApplicationController
 
   def authorize_class
     authorize Member
+  end
+
+  def filtered_members
+    members = @members
+
+    members = members.where("first_name ILIKE ?", "%#{params[:first_name]}%") if params[:first_name].present?
+    members = members.where("last_name ILIKE ?", "%#{params[:last_name]}%") if params[:last_name].present?
+
+    if params[:active] == "true"
+      members = members.where("membership_end IS NULL OR membership_end >= ?", Date.today)
+    elsif params[:active] == "false"
+      members = members.where("membership_end IS NOT NULL AND membership_end < ?", Date.today)
+    end
+
+    members
   end
 end

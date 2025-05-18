@@ -6,7 +6,7 @@ class ReservationsController < ApplicationController
   before_action :authorize_class, only: [ :index ]
 
   def index
-    render json: ReservationSerializer.new(@reservations).serializable_hash
+    render json: ReservationSerializer.new(filtered_reservations).serializable_hash
   end
 
   def show
@@ -59,5 +59,23 @@ class ReservationsController < ApplicationController
 
   def authorize_class
     authorize Reservation
+  end
+
+  def filtered_reservations
+    reservations = @reservations
+
+    reservations = reservations.where(user_id: params[:user_id]) if params[:user_id].present?
+    reservations = reservations.where(book_id: params[:book_id]) if params[:book_id].present?
+
+    if params[:expired].present?
+      case params[:expired]
+      when "true"
+        reservations = reservations.where("expiration_date < ?", Date.today)
+      when "false"
+        reservations = reservations.where("expiration_date >= ?", Date.today)
+      end
+    end
+
+    reservations
   end
 end
