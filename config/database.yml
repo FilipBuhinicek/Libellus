@@ -2,28 +2,59 @@ development:
   adapter: postgresql
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  database: libellus_development
   username: postgres
   password: password
-  host: 172.18.176.1
+  host: <%= ENV.fetch("DATABASE_HOST", "host.docker.internal") %>
   port: 5432
-  database: libellus_development
 
 test:
   adapter: postgresql
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  database: libellus_test
   username: postgres
   password: password
-  host: 172.18.176.1
+  host: <%= ENV.fetch("DATABASE_HOST", "host.docker.internal") %>
   port: 5432
-  database: libellus_test
 
 production:
-  adapter: postgresql
-  encoding: unicode
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  username: postgres
-  password: password
-  host: 172.18.176.1
-  port: 5432
-  database: libellus_test
+  primary:
+    adapter: postgresql
+    encoding: unicode
+    pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+    database: <%= ENV.fetch("DATABASE_NAME", "libellus_test") %>
+    username: <%= ENV.fetch("POSTGRES_USER", "postgres") %>
+    password: <%= ENV.fetch("POSTGRES_PASSWORD", "password") %>
+    host: <%= ENV.fetch("DATABASE_HOST", "host.docker.internal") %>
+    port: 5432
+
+  cable:
+    adapter: postgresql
+    encoding: unicode
+    pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+    database: <%= ENV.fetch("CABLE_DATABASE_NAME", "libellus_cable_production") %>
+    username: <%= ENV.fetch("POSTGRES_USER", "postgres") %>
+    password: <%= ENV.fetch("POSTGRES_PASSWORD", "password") %>
+    host: <%= ENV.fetch("DATABASE_HOST", "host.docker.internal") %>
+    port: 5432
+
+  queue:
+    adapter: postgresql
+    encoding: unicode
+    pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+    database: <%= ENV.fetch("CABLE_DATABASE_NAME", "libellus_queue_production") %>
+    username: <%= ENV.fetch("POSTGRES_USER", "postgres") %>
+    password: <%= ENV.fetch("POSTGRES_PASSWORD", "password") %>
+    host: <%= ENV.fetch("DATABASE_HOST", "host.docker.internal") %>
+    port: 5432
+
+  cache:
+    adapter: postgresql
+    encoding: unicode
+    pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+    database: <%= ENV.fetch("CABLE_DATABASE_NAME", "libellus_cache_production") %>
+    username: <%= ENV.fetch("POSTGRES_USER", "postgres") %>
+    password: <%= ENV.fetch("POSTGRES_PASSWORD", "password") %>
+    host: <%= ENV.fetch("DATABASE_HOST", "host.docker.internal") %>
+    port: 5432

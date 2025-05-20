@@ -1,0 +1,10 @@
+FROM postgres:17-alpine
+
+ENV DATABASE_NAME=libellusDB
+ENV POSTGRES_USER=postgres
+ENV POSTGRES_PASSWORD=password
+ENV POSTGRES_DB=libellusDB
+
+COPY libellusDB.sql /docker-entrypoint-initdb.d/
+
+EXPOSE 5432
