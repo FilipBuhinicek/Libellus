@@ -8,8 +8,17 @@ development:
   port: 5432
   database: libellus_development
 
-
 test:
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  username: postgres
+  password: password
+  host: 172.18.176.1
+  port: 5432
+  database: libellus_test
+
+production:
   adapter: postgresql
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
