@@ -3,13 +3,12 @@
 --
 
 -- Dumped from database version 16.1
--- Dumped by pg_dump version 16.1
-
--- Started on 2025-05-20 18:44:33
+-- Dumped by pg_dump version 17.0
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
@@ -18,45 +17,45 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
---
--- TOC entry 851 (class 1247 OID 519381)
--- Name: uloga_enum; Type: TYPE; Schema: public; Owner: postgres
---
-
-CREATE TYPE public.uloga_enum AS ENUM (
-    'clan',
-    'knjiznicar'
-);
-
-
-ALTER TYPE public.uloga_enum OWNER TO postgres;
-
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
 
 --
--- TOC entry 216 (class 1259 OID 519386)
--- Name: autor; Type: TABLE; Schema: public; Owner: postgres
+-- Name: ar_internal_metadata; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.autor (
-    id_autora integer NOT NULL,
-    ime character varying(100) NOT NULL,
-    prezime character varying(100) NOT NULL,
-    biografija character varying(300)
+CREATE TABLE public.ar_internal_metadata (
+    key character varying NOT NULL,
+    value character varying,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
 
-ALTER TABLE public.autor OWNER TO postgres;
+ALTER TABLE public.ar_internal_metadata OWNER TO postgres;
 
 --
--- TOC entry 215 (class 1259 OID 519385)
--- Name: autor_id_autora_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: authors; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE SEQUENCE public.autor_id_autora_seq
-    AS integer
+CREATE TABLE public.authors (
+    id bigint NOT NULL,
+    first_name character varying NOT NULL,
+    last_name character varying,
+    biography text,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+ALTER TABLE public.authors OWNER TO postgres;
+
+--
+-- Name: authors_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.authors_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -64,42 +63,39 @@ CREATE SEQUENCE public.autor_id_autora_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.autor_id_autora_seq OWNER TO postgres;
+ALTER SEQUENCE public.authors_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4902 (class 0 OID 0)
--- Dependencies: 215
--- Name: autor_id_autora_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: authors_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
-ALTER SEQUENCE public.autor_id_autora_seq OWNED BY public.autor.id_autora;
+ALTER SEQUENCE public.authors_id_seq OWNED BY public.authors.id;
 
 
 --
--- TOC entry 220 (class 1259 OID 519404)
--- Name: knjiga; Type: TABLE; Schema: public; Owner: postgres
+-- Name: books; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.knjiga (
-    id_knjige integer NOT NULL,
-    naslov character varying(255) NOT NULL,
-    autor_id integer,
-    tip_knjige integer NOT NULL,
-    broj_primjeraka integer NOT NULL,
-    godina_izdanja date,
-    opis character varying(255)
+CREATE TABLE public.books (
+    id bigint NOT NULL,
+    title character varying(255) NOT NULL,
+    published_year integer,
+    description text,
+    book_type character varying DEFAULT 'fiction'::character varying NOT NULL,
+    copies_available integer,
+    author_id integer,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
 
-ALTER TABLE public.knjiga OWNER TO postgres;
+ALTER TABLE public.books OWNER TO postgres;
 
 --
--- TOC entry 219 (class 1259 OID 519403)
--- Name: knjiga_id_knjige_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: books_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
-CREATE SEQUENCE public.knjiga_id_knjige_seq
-    AS integer
+CREATE SEQUENCE public.books_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -107,44 +103,38 @@ CREATE SEQUENCE public.knjiga_id_knjige_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.knjiga_id_knjige_seq OWNER TO postgres;
+ALTER SEQUENCE public.books_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4903 (class 0 OID 0)
--- Dependencies: 219
--- Name: knjiga_id_knjige_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: books_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
-ALTER SEQUENCE public.knjiga_id_knjige_seq OWNED BY public.knjiga.id_knjige;
+ALTER SEQUENCE public.books_id_seq OWNED BY public.books.id;
 
 
 --
--- TOC entry 218 (class 1259 OID 519395)
--- Name: korisnik; Type: TABLE; Schema: public; Owner: postgres
+-- Name: borrowings; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.korisnik (
-    id_korisnika integer NOT NULL,
-    ime character varying(100) NOT NULL,
-    prezime character varying(100) NOT NULL,
-    email character varying(255),
-    datum_registracije date,
-    uloga public.uloga_enum,
-    datum_upisa date,
-    kraj_clanarine date,
-    datum_zaposlenja date
+CREATE TABLE public.borrowings (
+    id bigint NOT NULL,
+    borrow_date date NOT NULL,
+    return_date date,
+    user_id bigint NOT NULL,
+    book_id bigint NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
+    due_date date NOT NULL
 );
 
 
-ALTER TABLE public.korisnik OWNER TO postgres;
+ALTER TABLE public.borrowings OWNER TO postgres;
 
 --
--- TOC entry 217 (class 1259 OID 519394)
--- Name: korisnik_id_korisnika_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: borrowings_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
-CREATE SEQUENCE public.korisnik_id_korisnika_seq
-    AS integer
+CREATE SEQUENCE public.borrowings_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -152,40 +142,37 @@ CREATE SEQUENCE public.korisnik_id_korisnika_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.korisnik_id_korisnika_seq OWNER TO postgres;
+ALTER SEQUENCE public.borrowings_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4904 (class 0 OID 0)
--- Dependencies: 217
--- Name: korisnik_id_korisnika_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: borrowings_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
-ALTER SEQUENCE public.korisnik_id_korisnika_seq OWNED BY public.korisnik.id_korisnika;
+ALTER SEQUENCE public.borrowings_id_seq OWNED BY public.borrowings.id;
 
 
 --
--- TOC entry 226 (class 1259 OID 519452)
--- Name: obavijest; Type: TABLE; Schema: public; Owner: postgres
+-- Name: notifications; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.obavijest (
-    id_obavijesti integer NOT NULL,
-    id_korisnika integer,
-    naslov character varying(255),
-    sadrzaj character varying(255),
-    datum_slanja date
+CREATE TABLE public.notifications (
+    id bigint NOT NULL,
+    title character varying(255) NOT NULL,
+    content text NOT NULL,
+    sent_date date NOT NULL,
+    user_id bigint NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
 
-ALTER TABLE public.obavijest OWNER TO postgres;
+ALTER TABLE public.notifications OWNER TO postgres;
 
 --
--- TOC entry 225 (class 1259 OID 519451)
--- Name: obavijest_id_obavijesti_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: notifications_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
-CREATE SEQUENCE public.obavijest_id_obavijesti_seq
-    AS integer
+CREATE SEQUENCE public.notifications_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -193,41 +180,37 @@ CREATE SEQUENCE public.obavijest_id_obavijesti_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.obavijest_id_obavijesti_seq OWNER TO postgres;
+ALTER SEQUENCE public.notifications_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4905 (class 0 OID 0)
--- Dependencies: 225
--- Name: obavijest_id_obavijesti_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: notifications_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
-ALTER SEQUENCE public.obavijest_id_obavijesti_seq OWNED BY public.obavijest.id_obavijesti;
+ALTER SEQUENCE public.notifications_id_seq OWNED BY public.notifications.id;
 
 
 --
--- TOC entry 222 (class 1259 OID 519418)
--- Name: posudba; Type: TABLE; Schema: public; Owner: postgres
+-- Name: reservations; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.posudba (
-    id_posudbe integer NOT NULL,
-    id_korisnika integer,
-    id_knjige integer,
-    datum_posudbe date NOT NULL,
-    datum_povratka date NOT NULL,
-    kasnjenje boolean
+CREATE TABLE public.reservations (
+    id bigint NOT NULL,
+    reservation_date date NOT NULL,
+    expiration_date date NOT NULL,
+    user_id bigint NOT NULL,
+    book_id bigint NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
 
-ALTER TABLE public.posudba OWNER TO postgres;
+ALTER TABLE public.reservations OWNER TO postgres;
 
 --
--- TOC entry 221 (class 1259 OID 519417)
--- Name: posudba_id_posudbe_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: reservations_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
-CREATE SEQUENCE public.posudba_id_posudbe_seq
-    AS integer
+CREATE SEQUENCE public.reservations_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -235,40 +218,53 @@ CREATE SEQUENCE public.posudba_id_posudbe_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.posudba_id_posudbe_seq OWNER TO postgres;
+ALTER SEQUENCE public.reservations_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4906 (class 0 OID 0)
--- Dependencies: 221
--- Name: posudba_id_posudbe_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: reservations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
-ALTER SEQUENCE public.posudba_id_posudbe_seq OWNED BY public.posudba.id_posudbe;
+ALTER SEQUENCE public.reservations_id_seq OWNED BY public.reservations.id;
 
 
 --
--- TOC entry 224 (class 1259 OID 519435)
--- Name: rezervacija; Type: TABLE; Schema: public; Owner: postgres
+-- Name: schema_migrations; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.rezervacija (
-    id_rezervacije integer NOT NULL,
-    id_korisnika integer,
-    id_knjige integer,
-    datum_rezervacije date NOT NULL,
-    datum_isteka_rezervacije date NOT NULL
+CREATE TABLE public.schema_migrations (
+    version character varying NOT NULL
 );
 
 
-ALTER TABLE public.rezervacija OWNER TO postgres;
+ALTER TABLE public.schema_migrations OWNER TO postgres;
 
 --
--- TOC entry 223 (class 1259 OID 519434)
--- Name: rezervacija_id_rezervacije_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: users; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE SEQUENCE public.rezervacija_id_rezervacije_seq
-    AS integer
+CREATE TABLE public.users (
+    id bigint NOT NULL,
+    first_name character varying NOT NULL,
+    last_name character varying NOT NULL,
+    email character varying NOT NULL,
+    type character varying,
+    employment_date date,
+    membership_start date,
+    membership_end date,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
+    termination_date date,
+    password_digest character varying
+);
+
+
+ALTER TABLE public.users OWNER TO postgres;
+
+--
+-- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.users_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -276,347 +272,380 @@ CREATE SEQUENCE public.rezervacija_id_rezervacije_seq
     CACHE 1;
 
 
-ALTER SEQUENCE public.rezervacija_id_rezervacije_seq OWNER TO postgres;
+ALTER SEQUENCE public.users_id_seq OWNER TO postgres;
 
 --
--- TOC entry 4907 (class 0 OID 0)
--- Dependencies: 223
--- Name: rezervacija_id_rezervacije_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
-ALTER SEQUENCE public.rezervacija_id_rezervacije_seq OWNED BY public.rezervacija.id_rezervacije;
+ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
 
 
 --
--- TOC entry 4716 (class 2604 OID 519389)
--- Name: autor id_autora; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: authors id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.autor ALTER COLUMN id_autora SET DEFAULT nextval('public.autor_id_autora_seq'::regclass);
-
-
---
--- TOC entry 4718 (class 2604 OID 519407)
--- Name: knjiga id_knjige; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.knjiga ALTER COLUMN id_knjige SET DEFAULT nextval('public.knjiga_id_knjige_seq'::regclass);
+ALTER TABLE ONLY public.authors ALTER COLUMN id SET DEFAULT nextval('public.authors_id_seq'::regclass);
 
 
 --
--- TOC entry 4717 (class 2604 OID 519398)
--- Name: korisnik id_korisnika; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: books id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.korisnik ALTER COLUMN id_korisnika SET DEFAULT nextval('public.korisnik_id_korisnika_seq'::regclass);
-
-
---
--- TOC entry 4721 (class 2604 OID 519455)
--- Name: obavijest id_obavijesti; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.obavijest ALTER COLUMN id_obavijesti SET DEFAULT nextval('public.obavijest_id_obavijesti_seq'::regclass);
+ALTER TABLE ONLY public.books ALTER COLUMN id SET DEFAULT nextval('public.books_id_seq'::regclass);
 
 
 --
--- TOC entry 4719 (class 2604 OID 519421)
--- Name: posudba id_posudbe; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: borrowings id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.posudba ALTER COLUMN id_posudbe SET DEFAULT nextval('public.posudba_id_posudbe_seq'::regclass);
-
-
---
--- TOC entry 4720 (class 2604 OID 519438)
--- Name: rezervacija id_rezervacije; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.rezervacija ALTER COLUMN id_rezervacije SET DEFAULT nextval('public.rezervacija_id_rezervacije_seq'::regclass);
+ALTER TABLE ONLY public.borrowings ALTER COLUMN id SET DEFAULT nextval('public.borrowings_id_seq'::regclass);
 
 
 --
--- TOC entry 4886 (class 0 OID 519386)
--- Dependencies: 216
--- Data for Name: autor; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Name: notifications id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
-COPY public.autor (id_autora, ime, prezime, biografija) FROM stdin;
-1	J.K.	Rowling	Britanska autorica najpoznatija po seriji o Harryju Potteru.
-2	George	Orwell	Engleski pisac najpoznatiji po svojim knjigama "1984" i "Zivotinjska farma".
-3	Jane	Austen	Engleska knjizevnica poznata po romanima koji istrazuju britansko drustvo i ljubavnu dinamiku.
-4	Mark	Twain	Americki pisac, humorist i novinar poznat po romanima "The Adventures of Huckleberry Finn" i "Tom Sawyer".
-5	Ernest	Hemingway	Americki pisac poznat po jednostavnom stilu pisanja i dubokim temama o ratovima i zivotu.
-6	J.K.	Rowling	Britanska autorica najpoznatija po seriji o Harryju Potteru.
-7	George	Orwell	Engleski pisac najpoznatiji po svojim knjigama "1984" i "Zivotinjska farma".
-8	Jane	Austen	Engleska knjizevnica poznata po romanima koji istrazuju britansko drustvo i ljubavnu dinamiku.
-9	Mark	Twain	Americki pisac, humorist i novinar poznat po romanima "The Adventures of Huckleberry Finn" i "Tom Sawyer".
-10	Ernest	Hemingway	Americki pisac poznat po jednostavnom stilu pisanja i dubokim temama o ratovima i zivotu.
+ALTER TABLE ONLY public.notifications ALTER COLUMN id SET DEFAULT nextval('public.notifications_id_seq'::regclass);
+
+
+--
+-- Name: reservations id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.reservations ALTER COLUMN id SET DEFAULT nextval('public.reservations_id_seq'::regclass);
+
+
+--
+-- Name: users id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
+
+
+--
+-- Data for Name: ar_internal_metadata; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.ar_internal_metadata (key, value, created_at, updated_at) FROM stdin;
+environment	development	2025-05-12 17:34:29.230186	2025-05-12 17:34:29.23019
 \.
 
 
 --
--- TOC entry 4890 (class 0 OID 519404)
--- Dependencies: 220
--- Data for Name: knjiga; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: authors; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.knjiga (id_knjige, naslov, autor_id, tip_knjige, broj_primjeraka, godina_izdanja, opis) FROM stdin;
-1	Harry Potter and the Philosophers Stone	1	1	5	1997-06-26	Prvi dio serije o Harryju Potteru koji istrazuje svijet carobnjaka.
-2	1984	2	1	3	1949-06-08	DruÅ¡tvena kritika totalitarnih rezima kroz distopijsku buducnost.
-3	Pride and Prejudice	3	1	4	1813-01-28	Roman o ljubavi i druÅ¡tvenim normama iz perioda engleskog regentstva.
-4	The Adventures of Huckleberry Finn	4	1	6	1884-12-10	Roman o odrastanju i prijateljstvu na rijeci Mississippi.
-5	The Old Man and the Sea	5	1	2	1952-09-01	Prica o borbi starca s ogromnom ribom u otvorenom moru.
-6	Harry Potter and the Philosophers Stone	1	1	5	1997-06-26	Prvi dio serije o Harryju Potteru koji istrazuje svijet carobnjaka.
-7	1984	2	1	3	1949-06-08	DruÅ¡tvena kritika totalitarnih rezima kroz distopijsku buducnost.
-8	Pride and Prejudice	3	1	4	1813-01-28	Roman o ljubavi i druÅ¡tvenim normama iz perioda engleskog regentstva.
-9	The Adventures of Huckleberry Finn	4	1	6	1884-12-10	Roman o odrastanju i prijateljstvu na rijeci Mississippi.
-10	The Old Man and the Sea	5	1	2	1952-09-01	Prica o borbi starca s ogromnom ribom u otvorenom moru.
+COPY public.authors (id, first_name, last_name, biography, created_at, updated_at) FROM stdin;
+1	J.K.	Rowling	Britanska autorica najpoznatija po seriji o Harryju Potteru.	2025-05-13 18:09:40.031812	2025-05-13 18:09:40.031812
+2	George	Orwell	Engleski pisac najpoznatiji po knjigama "1984" i "Životinjska farma".	2025-05-13 18:09:40.031812	2025-05-13 18:09:40.031812
+3	Jane	Austen	Engleska književnica poznata po romanima koji istražuju britansko društvo i ljubavnu dinamiku.	2025-05-13 18:09:40.031812	2025-05-13 18:09:40.031812
+4	Mark	Twain	Američki pisac, humorist i novinar poznat po romanima "The Adventures of Huckleberry Finn" i "Tom Sawyer".	2025-05-13 18:09:40.031812	2025-05-13 18:09:40.031812
+5	Ernest	Hemingway	Američki pisac poznat po jednostavnom stilu i dubokim temama o ratovima i životu.	2025-05-13 18:09:40.031812	2025-05-13 18:09:40.031812
+6	Leo	Tolstoy	Ruski pisac poznat po djelima 'Rat i mir' i 'Ana Karenjina'.	2025-05-13 16:25:24.798863	2025-05-13 16:25:24.798863
+7	Filip	Dev	This is a short bio	2025-05-18 09:43:14.770835	2025-05-18 09:43:14.770835
 \.
 
 
 --
--- TOC entry 4888 (class 0 OID 519395)
--- Dependencies: 218
--- Data for Name: korisnik; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: books; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.korisnik (id_korisnika, ime, prezime, email, datum_registracije, uloga, datum_upisa, kraj_clanarine, datum_zaposlenja) FROM stdin;
-1	Filip	Markovic	filip.markovic@example.com	2023-05-12	clan	2023-05-12	2025-05-12	\N
-2	Ana	Ivic	ana.ivic@example.com	2023-04-22	knjiznicar	\N	\N	2023-04-22
-3	Luka	Juric	luka.juric@example.com	2022-09-15	clan	2022-09-15	2025-09-15	\N
-4	Ivana	Kovac	ivana.kovac@example.com	2023-01-10	knjiznicar	\N	\N	2023-01-10
-5	Tomislav	Soldo	tomislav.soldo@example.com	2021-06-05	clan	2021-06-05	2026-06-05	\N
+COPY public.books (id, title, published_year, description, book_type, copies_available, author_id, created_at, updated_at) FROM stdin;
+1	Harry Potter and the Philosopher's Stone	1997	Prvi dio serije o Harryju Potteru koji istražuje svijet čarobnjaka.	fiction	5	1	2025-05-13 18:09:40.031812	2025-05-13 18:09:40.031812
+2	1984	1949	Društvena kritika totalitarnih režima kroz distopijsku budućnost.	fiction	3	2	2025-05-13 18:09:40.031812	2025-05-13 18:09:40.031812
+3	Pride and Prejudice	1813	Roman o ljubavi i društvenim normama iz perioda engleskog regentstva.	fiction	4	3	2025-05-13 18:09:40.031812	2025-05-13 18:09:40.031812
+4	The Adventures of Huckleberry Finn	1884	Roman o odrastanju i prijateljstvu na rijeci Mississippi.	fiction	6	4	2025-05-13 18:09:40.031812	2025-05-13 18:09:40.031812
+5	The Old Man and the Sea	1952	Priča o borbi starca s ogromnom ribom u otvorenom moru.	fiction	2	5	2025-05-13 18:09:40.031812	2025-05-13 18:09:40.031812
+6	1984	1984	desc	fiction	5	\N	2025-05-18 09:45:02.723709	2025-05-18 09:45:02.723709
+7	1984	1984	desc	fiction	5	1	2025-05-18 09:46:43.558997	2025-05-18 09:46:43.558997
 \.
 
 
 --
--- TOC entry 4896 (class 0 OID 519452)
--- Dependencies: 226
--- Data for Name: obavijest; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: borrowings; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.obavijest (id_obavijesti, id_korisnika, naslov, sadrzaj, datum_slanja) FROM stdin;
-1	1	Nova knjiga u ponudi	Knjiga "1984" Georgea Orwella sada je dostupna za posudbu!	2024-04-04
-2	2	Povratak knjige	Molimo Vas da vratite knjigu "Pride and Prejudice" najkasnije do 2024-02-27.	2024-02-22
-3	3	Obavijest o kaÅ¡njenju	VaÅ¡a posudba "The Adventures of Huckleberry Finn" je zakasnila. Molimo Vas da je vratite Å¡to je prije moguce.	2024-04-03
-4	4	Novost u knjiznici	U knjiznici je dostupna nova knjiga: "The Old Man and the Sea" Ernesta Hemingwaya.	2024-03-31
-5	5	Rok za povratak	Sjetite se da je rok za povratak knjige "The Old Man and the Sea" 2024-03-17.	2024-03-12
-6	1	Nova knjiga u ponudi	Knjiga "1984" Georgea Orwella sada je dostupna za posudbu!	2024-04-04
-7	2	Povratak knjige	Molimo Vas da vratite knjigu "Pride and Prejudice" najkasnije do 2024-02-27.	2024-02-22
-8	3	Obavijest o kaÅ¡njenju	VaÅ¡a posudba "The Adventures of Huckleberry Finn" je zakasnila. Molimo Vas da je vratite Å¡to je prije moguce.	2024-04-03
-9	4	Novost u knjiznici	U knjiznici je dostupna nova knjiga: "The Old Man and the Sea" Ernesta Hemingwaya.	2024-03-31
-10	5	Rok za povratak	Sjetite se da je rok za povratak knjige "The Old Man and the Sea" 2024-03-17.	2024-03-12
+COPY public.borrowings (id, borrow_date, return_date, user_id, book_id, created_at, updated_at, due_date) FROM stdin;
+1	2024-03-15	2024-03-22	1	1	2025-05-13 18:13:15.653289	2025-05-13 18:13:15.653289	2024-03-22
+2	2024-02-20	2024-02-27	2	3	2025-05-13 18:13:15.653289	2025-05-13 18:13:15.653289	2024-02-27
+3	2024-01-10	2024-01-17	3	2	2025-05-13 18:13:15.653289	2025-05-13 18:13:15.653289	2024-01-17
+4	2024-04-01	2024-04-08	4	4	2025-05-13 18:13:15.653289	2025-05-13 18:13:15.653289	2024-04-08
+5	2024-03-10	2024-03-17	5	5	2025-05-13 18:13:15.653289	2025-05-13 18:13:15.653289	2024-03-17
+6	2025-05-15	\N	1	1	2025-05-18 09:49:20.128455	2025-05-18 09:49:20.128455	2025-05-25
 \.
 
 
 --
--- TOC entry 4892 (class 0 OID 519418)
--- Dependencies: 222
--- Data for Name: posudba; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: notifications; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.posudba (id_posudbe, id_korisnika, id_knjige, datum_posudbe, datum_povratka, kasnjenje) FROM stdin;
-1	1	1	2024-03-15	2024-03-22	f
-2	2	3	2024-02-20	2024-02-27	f
-3	3	2	2024-01-10	2024-01-17	f
-4	4	4	2024-04-01	2024-04-08	t
-5	5	5	2024-03-10	2024-03-17	f
-6	1	1	2024-03-15	2024-03-22	f
-7	2	3	2024-02-20	2024-02-27	f
-8	3	2	2024-01-10	2024-01-17	f
-9	4	4	2024-04-01	2024-04-08	t
-10	5	5	2024-03-10	2024-03-17	f
+COPY public.notifications (id, title, content, sent_date, user_id, created_at, updated_at) FROM stdin;
+1	Nova knjiga u ponudi	Knjiga "1984" Georgea Orwella sada je dostupna za posudbu!	2024-04-04	1	2025-05-13 18:14:16.195656	2025-05-13 18:14:16.195656
+2	Povratak knjige	Molimo Vas da vratite knjigu "Pride and Prejudice" najkasnije do 2024-02-27.	2024-02-22	2	2025-05-13 18:14:16.195656	2025-05-13 18:14:16.195656
+3	Obavijest o kašnjenju	Vaša posudba "The Adventures of Huckleberry Finn" je zakasnila. Molimo Vas da je vratite što je prije moguce.	2024-04-03	3	2025-05-13 18:14:16.195656	2025-05-13 18:14:16.195656
+4	Novost u knjiznici	U knjiznici je dostupna nova knjiga: "The Old Man and the Sea" Ernesta Hemingwaya.	2024-03-31	4	2025-05-13 18:14:16.195656	2025-05-13 18:14:16.195656
+5	Rok za povratak	Sjetite se da je rok za povratak knjige "The Old Man and the Sea" 2024-03-17.	2024-03-12	5	2025-05-13 18:14:16.195656	2025-05-13 18:14:16.195656
+6	Title	Content	2025-05-15	1	2025-05-18 09:51:47.013374	2025-05-18 09:51:47.013374
 \.
 
 
 --
--- TOC entry 4894 (class 0 OID 519435)
--- Dependencies: 224
--- Data for Name: rezervacija; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: reservations; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.rezervacija (id_rezervacije, id_korisnika, id_knjige, datum_rezervacije, datum_isteka_rezervacije) FROM stdin;
-1	1	2	2024-04-05	2024-04-09
-2	3	1	2024-04-06	2024-04-10
-3	2	4	2024-03-30	2024-04-03
-4	4	3	2024-04-02	2024-04-06
-5	5	5	2024-04-01	2024-04-05
+COPY public.reservations (id, reservation_date, expiration_date, user_id, book_id, created_at, updated_at) FROM stdin;
+1	2024-04-05	2024-04-09	1	2	2025-05-13 18:13:43.601076	2025-05-13 18:13:43.601076
+2	2024-04-06	2024-04-10	3	1	2025-05-13 18:13:43.601076	2025-05-13 18:13:43.601076
+3	2024-03-30	2024-04-03	2	4	2025-05-13 18:13:43.601076	2025-05-13 18:13:43.601076
+4	2024-04-02	2024-04-06	4	3	2025-05-13 18:13:43.601076	2025-05-13 18:13:43.601076
+5	2024-04-01	2024-04-05	5	5	2025-05-13 18:13:43.601076	2025-05-13 18:13:43.601076
+6	2025-05-15	2025-05-25	1	1	2025-05-18 09:50:15.348348	2025-05-18 09:50:15.348348
 \.
 
 
 --
--- TOC entry 4908 (class 0 OID 0)
--- Dependencies: 215
--- Name: autor_id_autora_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Data for Name: schema_migrations; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.autor_id_autora_seq', 10, true);
-
-
---
--- TOC entry 4909 (class 0 OID 0)
--- Dependencies: 219
--- Name: knjiga_id_knjige_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.knjiga_id_knjige_seq', 10, true);
-
-
---
--- TOC entry 4910 (class 0 OID 0)
--- Dependencies: 217
--- Name: korisnik_id_korisnika_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.korisnik_id_korisnika_seq', 6, true);
+COPY public.schema_migrations (version) FROM stdin;
+20250512162730
+20250512163525
+20250512163555
+20250512163556
+20250512163605
+20250512163606
+20250513153600
+20250513154117
+20250513155038
+20250514160547
+20250514162032
+20250514163223
+20250517205927
+\.
 
 
 --
--- TOC entry 4911 (class 0 OID 0)
--- Dependencies: 225
--- Name: obavijest_id_obavijesti_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.obavijest_id_obavijesti_seq', 10, true);
-
-
---
--- TOC entry 4912 (class 0 OID 0)
--- Dependencies: 221
--- Name: posudba_id_posudbe_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.posudba_id_posudbe_seq', 10, true);
-
-
---
--- TOC entry 4913 (class 0 OID 0)
--- Dependencies: 223
--- Name: rezervacija_id_rezervacije_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.rezervacija_id_rezervacije_seq', 5, true);
+COPY public.users (id, first_name, last_name, email, type, employment_date, membership_start, membership_end, created_at, updated_at, termination_date, password_digest) FROM stdin;
+1	Filip	Marković	filip.markovic@example.com	Member	\N	2023-05-12	2025-05-12	2025-05-13 18:09:40.031812	2025-05-13 18:09:40.031812	\N	\N
+2	Ana	Ivić	ana.ivic@example.com	Librarian	2023-04-22	\N	\N	2025-05-13 18:09:40.031812	2025-05-13 18:09:40.031812	\N	\N
+3	Luka	Jurić	luka.juric@example.com	Member	\N	2022-09-15	2025-09-15	2025-05-13 18:09:40.031812	2025-05-13 18:09:40.031812	\N	\N
+4	Ivana	Kovač	ivana.kovac@example.com	Librarian	2023-01-10	\N	\N	2025-05-13 18:09:40.031812	2025-05-13 18:09:40.031812	\N	\N
+5	Tomislav	Soldo	tomislav.soldo@example.com	Member	\N	2021-06-05	2026-06-05	2025-05-13 18:09:40.031812	2025-05-13 18:09:40.031812	\N	\N
+6	Ana	Ivic	ana.ivic@gmail.com	Member	\N	\N	\N	2025-05-13 16:40:07.413685	2025-05-13 16:40:07.413685	\N	\N
+7	Ana	Horvat	ana.horvat@example.com	Librarian	2024-01-01	\N	\N	2025-05-14 16:29:56.137489	2025-05-14 16:29:56.137489	\N	$2a$12$/VX9n7dW9bm8SRmmLg8rnOGo1Qwmj4/keZIwQ8MVOp4MMhB.QCfz2
+8	Ivan	Ivić	ivan.ivic@example.com	Librarian	2024-02-02	\N	\N	2025-05-14 16:30:20.245185	2025-05-14 16:30:20.245185	\N	$2a$12$c7SxTXhUhgphDp7x5k9HN.jUM5etuPzuexlD7ZSHr.8R1ZmHzAMK.
+9	Filip	Dev	filip.dev@example.com	Librarian	2024-03-01	\N	\N	2025-05-14 16:46:43.592279	2025-05-14 16:46:43.592279	\N	$2a$12$Pcp/61O15UL1FgTnaoLdHOc9Y7hZamG/A8ezXyAySMwRUkwUKhOGe
+10	Filip	Member	filip.member@example.com	Member	\N	2024-03-01	\N	2025-05-14 17:51:51.857295	2025-05-14 17:51:51.857295	\N	$2a$12$bpg41Zc/ourcCgrue7/5U.9A5sAX0BEqhcTeX2y99dMASXDrgaw6q
+11	Filip	Member	filip.mem@example.com	Member	\N	2024-03-01	\N	2025-05-14 17:54:45.18921	2025-05-14 17:54:45.18921	\N	$2a$12$WHLGJ9xf.RL3brzFU0kyA.5hqXD3Rmp04fL.0GH4bySGFr/OrUoKW
+\.
 
 
 --
--- TOC entry 4723 (class 2606 OID 519393)
--- Name: autor autor_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: authors_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.autor
-    ADD CONSTRAINT autor_pkey PRIMARY KEY (id_autora);
+SELECT pg_catalog.setval('public.authors_id_seq', 7, true);
 
 
 --
--- TOC entry 4729 (class 2606 OID 519411)
--- Name: knjiga knjiga_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: books_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.knjiga
-    ADD CONSTRAINT knjiga_pkey PRIMARY KEY (id_knjige);
+SELECT pg_catalog.setval('public.books_id_seq', 7, true);
 
 
 --
--- TOC entry 4725 (class 2606 OID 519402)
--- Name: korisnik korisnik_email_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: borrowings_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.korisnik
-    ADD CONSTRAINT korisnik_email_key UNIQUE (email);
+SELECT pg_catalog.setval('public.borrowings_id_seq', 6, true);
 
 
 --
--- TOC entry 4727 (class 2606 OID 519400)
--- Name: korisnik korisnik_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: notifications_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.korisnik
-    ADD CONSTRAINT korisnik_pkey PRIMARY KEY (id_korisnika);
+SELECT pg_catalog.setval('public.notifications_id_seq', 6, true);
 
 
 --
--- TOC entry 4735 (class 2606 OID 519459)
--- Name: obavijest obavijest_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: reservations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.obavijest
-    ADD CONSTRAINT obavijest_pkey PRIMARY KEY (id_obavijesti);
+SELECT pg_catalog.setval('public.reservations_id_seq', 6, true);
 
 
 --
--- TOC entry 4731 (class 2606 OID 519423)
--- Name: posudba posudba_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.posudba
-    ADD CONSTRAINT posudba_pkey PRIMARY KEY (id_posudbe);
+SELECT pg_catalog.setval('public.users_id_seq', 11, true);
 
 
 --
--- TOC entry 4733 (class 2606 OID 519440)
--- Name: rezervacija rezervacija_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: ar_internal_metadata ar_internal_metadata_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.rezervacija
-    ADD CONSTRAINT rezervacija_pkey PRIMARY KEY (id_rezervacije);
-
-
---
--- TOC entry 4736 (class 2606 OID 519412)
--- Name: knjiga knjiga_autor_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.knjiga
-    ADD CONSTRAINT knjiga_autor_id_fkey FOREIGN KEY (autor_id) REFERENCES public.autor(id_autora);
+ALTER TABLE ONLY public.ar_internal_metadata
+    ADD CONSTRAINT ar_internal_metadata_pkey PRIMARY KEY (key);
 
 
 --
--- TOC entry 4741 (class 2606 OID 519460)
--- Name: obavijest obavijest_id_korisnika_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: authors authors_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.obavijest
-    ADD CONSTRAINT obavijest_id_korisnika_fkey FOREIGN KEY (id_korisnika) REFERENCES public.korisnik(id_korisnika);
-
-
---
--- TOC entry 4737 (class 2606 OID 519429)
--- Name: posudba posudba_id_knjige_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.posudba
-    ADD CONSTRAINT posudba_id_knjige_fkey FOREIGN KEY (id_knjige) REFERENCES public.knjiga(id_knjige);
+ALTER TABLE ONLY public.authors
+    ADD CONSTRAINT authors_pkey PRIMARY KEY (id);
 
 
 --
--- TOC entry 4738 (class 2606 OID 519424)
--- Name: posudba posudba_id_korisnika_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: books books_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.posudba
-    ADD CONSTRAINT posudba_id_korisnika_fkey FOREIGN KEY (id_korisnika) REFERENCES public.korisnik(id_korisnika);
-
-
---
--- TOC entry 4739 (class 2606 OID 519446)
--- Name: rezervacija rezervacija_id_knjige_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.rezervacija
-    ADD CONSTRAINT rezervacija_id_knjige_fkey FOREIGN KEY (id_knjige) REFERENCES public.knjiga(id_knjige);
+ALTER TABLE ONLY public.books
+    ADD CONSTRAINT books_pkey PRIMARY KEY (id);
 
 
 --
--- TOC entry 4740 (class 2606 OID 519441)
--- Name: rezervacija rezervacija_id_korisnika_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: borrowings borrowings_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.rezervacija
-    ADD CONSTRAINT rezervacija_id_korisnika_fkey FOREIGN KEY (id_korisnika) REFERENCES public.korisnik(id_korisnika);
+ALTER TABLE ONLY public.borrowings
+    ADD CONSTRAINT borrowings_pkey PRIMARY KEY (id);
 
 
--- Completed on 2025-05-20 18:44:33
+--
+-- Name: notifications notifications_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.notifications
+    ADD CONSTRAINT notifications_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: reservations reservations_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.reservations
+    ADD CONSTRAINT reservations_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.schema_migrations
+    ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
+
+
+--
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: index_books_on_author_id; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX index_books_on_author_id ON public.books USING btree (author_id);
+
+
+--
+-- Name: index_borrowings_on_book_id; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX index_borrowings_on_book_id ON public.borrowings USING btree (book_id);
+
+
+--
+-- Name: index_borrowings_on_user_id; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX index_borrowings_on_user_id ON public.borrowings USING btree (user_id);
+
+
+--
+-- Name: index_notifications_on_user_id; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX index_notifications_on_user_id ON public.notifications USING btree (user_id);
+
+
+--
+-- Name: index_reservations_on_book_id; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX index_reservations_on_book_id ON public.reservations USING btree (book_id);
+
+
+--
+-- Name: index_reservations_on_user_id; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX index_reservations_on_user_id ON public.reservations USING btree (user_id);
+
+
+--
+-- Name: index_users_on_email; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX index_users_on_email ON public.users USING btree (email);
+
+
+--
+-- Name: borrowings fk_rails_2d6421032c; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.borrowings
+    ADD CONSTRAINT fk_rails_2d6421032c FOREIGN KEY (book_id) REFERENCES public.books(id);
+
+
+--
+-- Name: reservations fk_rails_48a92fce51; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.reservations
+    ADD CONSTRAINT fk_rails_48a92fce51 FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
+-- Name: books fk_rails_53d51ce16a; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.books
+    ADD CONSTRAINT fk_rails_53d51ce16a FOREIGN KEY (author_id) REFERENCES public.authors(id);
+
+
+--
+-- Name: borrowings fk_rails_64d35f133d; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.borrowings
+    ADD CONSTRAINT fk_rails_64d35f133d FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
+-- Name: notifications fk_rails_b080fb4855; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.notifications
+    ADD CONSTRAINT fk_rails_b080fb4855 FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
+-- Name: reservations fk_rails_bff51a5a6e; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.reservations
+    ADD CONSTRAINT fk_rails_bff51a5a6e FOREIGN KEY (book_id) REFERENCES public.books(id);
+
 
 --
 -- PostgreSQL database dump complete
