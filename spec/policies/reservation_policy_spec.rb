@@ -5,39 +5,12 @@ RSpec.describe ReservationPolicy, type: :policy do
 
   let(:reservation) { create(:reservation) }
 
-  permissions :index? do
+  permissions :index? :show?, :create?, :destroy? do
     context 'for any user' do
       let(:user) { nil }
 
       it 'grants access' do
         expect(subject).to permit(user, reservation)
-      end
-    end
-  end
-
-  permissions :show?, :create?, :destroy? do
-    context 'when user is a librarian' do
-      let(:user) { create(:librarian) }
-
-      it 'grants access' do
-        expect(subject).to permit(user, reservation)
-      end
-    end
-
-    context 'when user is a member and owner' do
-      let(:user) { create(:member) }
-      let(:reservation) { create(:reservation, member: user) }
-
-      it 'grants access' do
-        expect(subject).to permit(user, reservation)
-      end
-    end
-
-    context 'when user is a member but not owner' do
-      let(:user) { create(:member) }
-
-      it 'denies access' do
-        expect(subject).not_to permit(user, reservation)
       end
     end
   end

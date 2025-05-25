@@ -4,11 +4,11 @@ class BorrowingPolicy < ApplicationPolicy
   end
 
   def show?
-    user.librarian? || user == record.member
+    user.librarian?
   end
 
   def create?
-    user.librarian? || user == record.member
+    user.librarian?
   end
 
   def update?
@@ -16,7 +16,7 @@ class BorrowingPolicy < ApplicationPolicy
   end
 
   def destroy?
-    user.librarian? || user == record.member
+    user.librarian?
   end
 
   class Scope < Scope

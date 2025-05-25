@@ -4,11 +4,12 @@ class ReservationPolicy < ApplicationPolicy
   end
 
   def show?
-    user.librarian? || user == record.member
+    true
   end
 
   def create?
-    user.librarian? || user == record.member
+    binding.irb
+    true
   end
 
   def update?
@@ -16,7 +17,7 @@ class ReservationPolicy < ApplicationPolicy
   end
 
   def destroy?
-    user.librarian? || user == record.member
+    true
   end
 
   class Scope < Scope

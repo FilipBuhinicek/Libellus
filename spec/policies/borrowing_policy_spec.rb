@@ -24,17 +24,9 @@ RSpec.describe BorrowingPolicy, type: :policy do
       end
     end
 
-    context 'when user is a member and owner' do
+    context 'when user is a member' do
       let(:user) { create(:member) }
       let(:borrowing) { create(:borrowing, member: user) }
-
-      it 'grants access' do
-        expect(subject).to permit(user, borrowing)
-      end
-    end
-
-    context 'when user is a member but not owner' do
-      let(:user) { create(:member) }
 
       it 'denies access' do
         expect(subject).not_to permit(user, borrowing)
