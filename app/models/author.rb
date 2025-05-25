@@ -15,4 +15,8 @@ class Author < ApplicationRecord
 
   validates :first_name, presence: true
   validates :biography, length: { maximum: 2000 }, allow_blank: true
+
+  def full_name
+    "#{first_name} #{last_name}"
+  end
 end
