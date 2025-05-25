@@ -8,7 +8,6 @@ class ReservationPolicy < ApplicationPolicy
   end
 
   def create?
-    binding.irb
     true
   end
 
