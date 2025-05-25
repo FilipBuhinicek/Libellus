@@ -10,7 +10,7 @@ RSpec.describe AuthorPolicy, type: :policy do
       let(:user) { nil }
 
       it 'grants access' do
-        expect(subject).to permit(user, book)
+        expect(subject).to permit(user, author)
       end
     end
   end
@@ -20,7 +20,7 @@ RSpec.describe AuthorPolicy, type: :policy do
       let(:user) { create(:librarian) }
 
       it 'grants access' do
-        expect(subject).to permit(user, book)
+        expect(subject).to permit(user, author)
       end
     end
 
@@ -28,7 +28,7 @@ RSpec.describe AuthorPolicy, type: :policy do
       let(:user) { create(:member) }
 
       it 'denies access' do
-        expect(subject).not_to permit(user, book)
+        expect(subject).not_to permit(user, author)
       end
     end
   end
