@@ -1,10 +1,10 @@
 class AuthorPolicy < ApplicationPolicy
   def index?
-    user.librarian?
+    true
   end
 
   def show?
-    user.librarian?
+    true
   end
 
   def create?
