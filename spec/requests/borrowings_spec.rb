@@ -60,13 +60,6 @@ RSpec.describe "Borrowings", type: :request do
       expect(response_data["attributes"]["borrow_date"]).to eq(Date.today.to_s)
       expect(response_data["attributes"]["due_date"]).to eq((Date.today + 10.days).to_s)
     end
-
-      expect {
-        post "/borrowings", params: borrowing_params.to_json, headers: member_headers
-      }.to change { Borrowing.count }.by(1)
-
-      expect(response).to have_http_status(:created)
-    end
   end
 
   describe "PATCH /update" do
