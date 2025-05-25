@@ -18,7 +18,15 @@ class ReservationsController < ApplicationController
 
     authorize reservation
 
+    book = reservation.book
+
+    if book.copies_available <= 0
+      render json: { error: "Book is not available for reservation." }, status: :unprocessable_entity
+      return
+    end
+
     if reservation.save
+      book.update(copies_available: book.copies_available - 1)
       render json: ReservationSerializer.new(reservation).serializable_hash, status: :created
     else
       render json: reservation.errors, status: :unprocessable_entity

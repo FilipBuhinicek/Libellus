@@ -5,7 +5,7 @@ RSpec.describe ReservationPolicy, type: :policy do
 
   let(:reservation) { create(:reservation) }
 
-  permissions :index? :show?, :create?, :destroy? do
+  permissions :index?, :show?, :create?, :destroy? do
     context 'for any user' do
       let(:user) { nil }
 
