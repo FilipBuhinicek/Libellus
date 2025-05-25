@@ -42,6 +42,9 @@ class ReservationsController < ApplicationController
   end
 
   def destroy
+    if @reservation
+      @reservation.book.update(copies_available: @reservation.book.copies_available + 1)
+    end
     @reservation.destroy
     head :no_content
   end

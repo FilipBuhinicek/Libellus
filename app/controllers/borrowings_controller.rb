@@ -19,6 +19,11 @@ class BorrowingsController < ApplicationController
     authorize borrowing
 
     if borrowing.save
+      Reservation.where(user_id: borrowing.member.id, book: borrowing.book)
+                 .order(:created_at)
+                 .first
+                 &.destroy
+
       render json: BorrowingSerializer.new(borrowing).serializable_hash, status: :created
     else
       render json: borrowing.errors, status: :unprocessable_entity
@@ -34,6 +39,9 @@ class BorrowingsController < ApplicationController
   end
 
   def destroy
+    if @borrowing
+      @borrowing.book.update(copies_available: @borrowing.book.copies_available + 1)
+    end
     @borrowing.destroy
     head :no_content
   end
