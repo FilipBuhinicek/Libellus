@@ -14,11 +14,18 @@ RSpec.describe AuthorPolicy, type: :policy do
       end
     end
 
-    context 'when user is not a librarian' do
+    context 'when user is a member' do
       let(:user) { create(:member) }
 
-      it 'denies access' do
-        expect(subject).not_to permit(user, author)
+      it 'grants access to index and show' do
+        expect(subject).to permit(user, author, :index?)
+        expect(subject).to permit(user, author, :show?)
+      end
+
+      it 'denies access to create, update, and destroy' do
+        expect(subject).not_to permit(user, author, :create?)
+        expect(subject).not_to permit(user, author, :update?)
+        expect(subject).not_to permit(user, author, :destroy?)
       end
     end
   end
