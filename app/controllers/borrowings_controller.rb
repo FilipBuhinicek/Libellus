@@ -19,10 +19,14 @@ class BorrowingsController < ApplicationController
     authorize borrowing
 
     if borrowing.save
-      Reservation.where(user_id: borrowing.member.id, book: borrowing.book)
-                 .order(:created_at)
-                 .first
-                 &.destroy
+      reservation = Reservation.where(user_id: borrowing.member.id, book: borrowing.book)
+                               .order(:created_at)
+                               .first
+      if reservation
+        reservation.destroy
+      else
+        borrowing.book.update(copies_available: borrowing.book.copies_available - 1)
+      end
 
       render json: BorrowingSerializer.new(borrowing).serializable_hash, status: :created
     else
