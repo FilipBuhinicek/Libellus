@@ -18,7 +18,6 @@ RSpec.describe "Borrowings", type: :request do
       expect(response_data).to be_an(Array)
       expect(response_data.count).to eq(2)
     end
-
   end
 
   describe "GET /show" do
