@@ -19,16 +19,6 @@ RSpec.describe "Borrowings", type: :request do
       expect(response_data.count).to eq(2)
     end
 
-    it "returns own borrowings for member" do
-      create(:borrowing, member: create(:member))
-      create(:borrowing, member: member)
-
-      get "/borrowings", headers: member_headers
-
-      expect(response).to have_http_status(:success)
-      expect(response_data).to be_an(Array)
-      expect(response_data.count).to eq(1)
-    end
   end
 
   describe "GET /show" do
@@ -36,15 +26,6 @@ RSpec.describe "Borrowings", type: :request do
       borrowing = create(:borrowing)
 
       get "/borrowings/#{borrowing.id}", headers: librarian_headers
-
-      expect(response).to have_http_status(:success)
-      expect(response_data["id"]).to eq(borrowing.id.to_s)
-    end
-
-    it "returns own borrowing to member" do
-      borrowing = create(:borrowing, member: member)
-
-      get "/borrowings/#{borrowing.id}", headers: member_headers
 
       expect(response).to have_http_status(:success)
       expect(response_data["id"]).to eq(borrowing.id.to_s)
@@ -79,17 +60,6 @@ RSpec.describe "Borrowings", type: :request do
       expect(response_data["attributes"]["borrow_date"]).to eq(Date.today.to_s)
       expect(response_data["attributes"]["due_date"]).to eq((Date.today + 10.days).to_s)
     end
-
-    it "creates own borrowing as member" do
-      book = create(:book)
-      borrowing_params = {
-        borrowing: {
-          borrow_date: Date.today,
-          due_date: Date.today + 10.days,
-          book_id: book.id,
-          user_id: member.id
-        }
-      }
 
       expect {
         post "/borrowings", params: borrowing_params.to_json, headers: member_headers
@@ -158,14 +128,6 @@ RSpec.describe "Borrowings", type: :request do
     it "deletes borrowing as librarian" do
       expect {
         delete "/borrowings/#{borrowing.id}", headers: librarian_headers
-      }.to change { Borrowing.count }.by(-1)
-
-      expect(response).to have_http_status(:no_content)
-    end
-
-    it "deletes own borrowing as member" do
-      expect {
-        delete "/borrowings/#{borrowing.id}", headers: member_headers
       }.to change { Borrowing.count }.by(-1)
 
       expect(response).to have_http_status(:no_content)

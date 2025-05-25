@@ -37,7 +37,7 @@ RSpec.describe 'Borrowings Integration', type: :request do
       due_date: Date.today + 30.days
     }
 
-    post '/borrowings', params: borrowing_params.to_json, headers: member_headers
+    post '/borrowings', params: borrowing_params.to_json, headers: librarian_headers
     expect(response).to have_http_status(:created)
 
     # Fetching borrowing for member

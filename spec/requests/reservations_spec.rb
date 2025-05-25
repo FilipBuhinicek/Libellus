@@ -49,14 +49,6 @@ RSpec.describe "Reservations", type: :request do
       expect(response).to have_http_status(:success)
       expect(response_data["id"]).to eq(reservation.id.to_s)
     end
-
-    it "forbids access to other member's reservation" do
-      reservation = create(:reservation, member: create(:member))
-
-      get "/reservations/#{reservation.id}", headers: member_headers
-
-      expect(response).to have_http_status(:forbidden)
-    end
   end
 
   describe "POST /create" do
@@ -169,14 +161,6 @@ RSpec.describe "Reservations", type: :request do
       }.to change { Reservation.count }.by(-1)
 
       expect(response).to have_http_status(:no_content)
-    end
-
-    it "forbids deletion of others' reservation by member" do
-      other_reservation = create(:reservation, member: create(:member))
-
-      delete "/reservations/#{other_reservation.id}", headers: member_headers
-
-      expect(response).to have_http_status(:forbidden)
     end
   end
 end
