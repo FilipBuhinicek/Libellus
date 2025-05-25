@@ -5,27 +5,30 @@ RSpec.describe AuthorPolicy, type: :policy do
 
   let(:author) { create(:author) }
 
-  permissions :index?, :show?, :create?, :update?, :destroy? do
+  permissions :index?, :show? do
+    context 'for any user' do
+      let(:user) { nil }
+
+      it 'grants access' do
+        expect(subject).to permit(user, book)
+      end
+    end
+  end
+
+  permissions :create?, :update?, :destroy? do
     context 'when user is a librarian' do
       let(:user) { create(:librarian) }
 
       it 'grants access' do
-        expect(subject).to permit(user, author)
+        expect(subject).to permit(user, book)
       end
     end
 
-    context 'when user is a member' do
+    context 'when user is not a librarian' do
       let(:user) { create(:member) }
 
-      it 'grants access to index and show' do
-        expect(subject).to permit(user, author, :index?)
-        expect(subject).to permit(user, author, :show?)
-      end
-
-      it 'denies access to create, update, and destroy' do
-        expect(subject).not_to permit(user, author, :create?)
-        expect(subject).not_to permit(user, author, :update?)
-        expect(subject).not_to permit(user, author, :destroy?)
+      it 'denies access' do
+        expect(subject).not_to permit(user, book)
       end
     end
   end
